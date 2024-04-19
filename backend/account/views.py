@@ -26,7 +26,7 @@ class UserRegisterView(APIView):
     """To Register the User"""
 
     def post(self, request, format=None):
-        data = request.data # holds username and password (in dictionary)
+        data = request.data
         username = data["username"]
         email = data["email"]
 
