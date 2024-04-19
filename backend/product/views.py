@@ -14,6 +14,24 @@ class ProductView(APIView):
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class ProductCategoryView(APIView):
+
+    def get(self, request, category_name):
+        try:
+            products = Product.objects.filter(category__name=category_name)
+            serializer = ProductSerializer(products, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            return Response({"detail": "No products found for this category."}, status=status.HTTP_404_NOT_FOUND)
+        
+class ProductSearchView(APIView):
+
+    def get(self, request):
+        query = request.query_params.get('query', '')
+        products = Product.objects.filter(description__icontains=query)
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ProductDetailView(APIView):

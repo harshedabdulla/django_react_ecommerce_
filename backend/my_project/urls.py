@@ -23,6 +23,8 @@ urlpatterns = [
     path('api/', include('product.urls')),
     path('payments/', include('payments.urls')),
     path('account/', include('account.urls')),
+    path('category/', include('category.urls')),
+    path('cart/', include('cart.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

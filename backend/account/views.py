@@ -1,4 +1,5 @@
 from .models import StripeModel, BillingAddress, OrderModel
+from cart.models import Cart
 from django.http import Http404
 from rest_framework import status
 from rest_framework.views import APIView
@@ -48,6 +49,7 @@ class UserRegisterView(APIView):
                     email=email,
                     password=make_password(data["password"]),
                 )
+                cart = Cart.objects.create(user=user)
                 serializer = UserRegisterTokenSerializer(user, many=False)
                 return Response(serializer.data)
 
