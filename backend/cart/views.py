@@ -10,7 +10,7 @@ class CartView(APIView):
 
     def get(self, request):
         try:
-            user = User.objects.get(id=request.user.id)
+            user = User.objects.get(username=request.data.get('username'))
             obj = Cart.objects.get(user=user)
             products = obj.products.all()
             serializer = ProductSerializer(products, many=True)
@@ -24,7 +24,8 @@ class AddProductToCartView(APIView):
 
     def post(self, request):
         product_id = request.data.get('product_id')
-        user_cart = Cart.objects.get(user=request.user)
+        user = User.objects.get(username=request.data.get('username'))
+        user_cart = Cart.objects.get(user=user)
         
         try:
             product = Product.objects.get(id=product_id)
@@ -38,7 +39,8 @@ class RemoveProductFromCartView(APIView):
 
     def post(self, request):
         product_id = request.data.get('product_id')
-        user_cart = Cart.objects.get(user=request.user)
+        user = User.objects.get(username=request.data.get('username'))
+        user_cart = Cart.objects.get(user=user)
 
         try:
             product = Product.objects.get(id=product_id)
