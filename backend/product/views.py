@@ -15,6 +15,7 @@ class ProductView(APIView):
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    
 class ProductCategoryView(APIView):
 
     def get(self, request, category_name):
