@@ -1,30 +1,22 @@
-// Categories.js
 import React, { useState } from 'react'
 
 const Categories = ({ categories, handleCategoryClick }) => {
   const [showDropdown, setShowDropdown] = useState(false)
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="relative">
       <button
-        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center"
+        className="bg-blue-500 font-bold py-2 px-4 text-white rounded-none inline-flex items-center"
         onClick={() => setShowDropdown(!showDropdown)}
       >
-        All categories
-        <svg
-          className="w-4 h-4 ml-2"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M10 12a1 1 0 0 1 .707.293l4 4a1 1 0 1 1-1.414 1.414L10 14.414l-3.293 3.293a1 1 0 1 1-1.414-1.414l4-4A1 1 0 0 1 10 12z"
-          />
-        </svg>
+        <i className="fas fa-list-ul mr-2"></i>
+        All Categories
+        <i
+          className={`fas fa-chevron-${showDropdown ? 'up' : 'down'} ml-2`}
+        ></i>
       </button>
       {showDropdown && (
-        <ul className="absolute bg-white border rounded mt-1">
+        <ul className="absolute bg-white border rounded-none">
           {categories.map((category, index) => (
             <li
               key={index}
