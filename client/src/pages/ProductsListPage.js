@@ -15,6 +15,13 @@ import fruits from '../assets/fruits.png'
 import meat from '../assets/meat.png'
 import clean from '../assets/clean.png'
 import Glide from '@glidejs/glide'
+import carrots from '../assets/featured/carrots.jpeg'
+import cereals from '../assets/featured/cereals.jpeg'
+import coffee from '../assets/featured/coffee.jpeg'
+import grapes from '../assets/featured/grapes.jpeg'
+import mango from '../assets/featured/mango.jpeg'
+import fr from '../assets/fr.png'
+
 const ProductsListPage = () => {
   let history = useHistory()
   let searchTerm = history.location.search
@@ -31,7 +38,7 @@ const ProductsListPage = () => {
       perView: 4,
       autoplay: 3000,
       animationDuration: 700,
-      gap: 32,
+      gap: 8,
       classNames: {
         nav: {
           active: '[&>*]:bg-wuiSlate-700',
@@ -180,6 +187,51 @@ const ProductsListPage = () => {
           </button>
         </div>
       </div>
+
+      {/* Featured Products Section*/}
+      <div className="items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-center">Featured Products</h1>
+          <hr className="w-16 mx-auto border-2 border-blue-500 mt-2" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
+          <div>
+            <img src={grapes} alt="grapes" className="w-48 h-48 m-auto" />
+            <h4 className="text-center mt-4">Grapes</h4>
+            <h4 className="text-center font-bold"> ₹99</h4>
+          </div>
+          <div>
+            <img src={carrots} alt="carrots" className="w-48 h-48 m-auto" />
+            <h4 className="text-center mt-4">Carrots</h4>
+            <h4 className="text-center font-bold"> ₹49</h4>
+          </div>
+          <div>
+            <img src={mango} alt="mango" className="w-48 h-48 m-auto" />
+            <h4 className="text-center mt-4">Mango</h4>
+            <h4 className="text-center font-bold"> ₹79</h4>
+          </div>
+          <div>
+            <img src={coffee} alt="coffee" className="w-48 h-48 m-auto" />
+            <h4 className="text-center mt-4">Coffee</h4>
+            <h4 className="text-center font-bold"> ₹199</h4>
+          </div>
+          <div>
+            <img src={cereals} alt="cereals" className="w-48 h-48 m-auto" />
+            <h4 className="text-center mt-4">Cereals</h4>
+            <h4 className="text-center font-bold"> ₹99</h4>
+          </div>
+        </div>
+      </div>
+      {/* Fruits Section */}
+      <div className="items-center">
+        <div className="flex justify-center">
+          <h1 className="text-4xl text-yellow-400 font-bold mt-4 px-4">
+            FRUITS
+          </h1>
+          <img src={fr} alt="fruits" className="w-20 h-16 mb-12" />
+        </div>
+      </div>
+
       {error && <Message variant="danger">{error}</Message>}
       {loading && (
         <span style={{ display: 'flex' }}>
