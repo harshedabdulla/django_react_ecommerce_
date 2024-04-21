@@ -2,13 +2,10 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getProductsList } from '../actions/productActions'
-import Message from '../components/Message'
-import { Spinner, Row, Col } from 'react-bootstrap'
-import Product from '../components/Product'
+
 import { useHistory } from 'react-router-dom'
 import { CREATE_PRODUCT_RESET } from '../constants'
-import Categories from '../components/Categories'
-import SearchBarForProducts from '../components/SearchBarForProducts'
+
 import bakery from '../assets/bakery.png'
 import dairy from '../assets/dairy.png'
 import fruits from '../assets/fruits.png'
@@ -27,10 +24,6 @@ const ProductsListPage = () => {
   let searchTerm = history.location.search
   const dispatch = useDispatch()
   const [selectedCategory, setSelectedCategory] = useState('All categories')
-
-  // products list reducer
-  const productsListReducer = useSelector((state) => state.productsListReducer)
-  const { loading, error, products } = productsListReducer
   useEffect(() => {
     const slider = new Glide('.glide-01', {
       type: 'carousel',
@@ -84,23 +77,23 @@ const ProductsListPage = () => {
         <div className="overflow-hidden" data-glide-el="track">
           <ul className="whitespace-no-wrap flex-no-wrap [backface-visibility: hidden] [transform-style: preserve-3d] [touch-action: pan-Y] [will-change: transform] relative flex w-full overflow-hidden p-0">
             <li>
-              <img src={fruits} className="m-auto w-36 pb-4" />
+              <img src={fruits} alt="fruits" className="m-auto w-36 pb-4" />
               <h4 className="text-center text-md">Fruits and Vegetables</h4>
             </li>
             <li>
-              <img src={dairy} className="m-auto w-36 pb-4" />
+              <img src={dairy} alt="dairy" className="m-auto w-36 pb-4" />
               <h4 className="text-center">Dairy Products</h4>
             </li>
             <li>
-              <img src={meat} className="m-auto w-36 pb-4" />
+              <img src={meat} alt="meat" className="m-auto w-36 pb-4" />
               <h4 className="text-center text-md">Meat</h4>
             </li>
             <li>
-              <img src={bakery} className="m-auto w-36 pb-4" />
+              <img src={bakery} alt="bakery" className="m-auto w-36 pb-4" />
               <h4 className="text-center text-md">Bakery</h4>
             </li>
             <li>
-              <img src={clean} className="m-auto w-36 pb-4" />
+              <img src={clean} alt="clean" className="m-auto w-36 pb-4" />
               <h4 className="text-center text-md">Cleaning Supplies</h4>
             </li>
           </ul>

@@ -6,12 +6,10 @@ import { getProductsList } from '../actions/productActions'
 import Message from '../components/Message'
 import { Spinner, Row, Col } from 'react-bootstrap'
 import Product from '../components/Product'
-import { useHistory } from 'react-router-dom'
+
 import { CREATE_PRODUCT_RESET } from '../constants'
 
 const ShopProducts = () => {
-  let history = useHistory()
-
   const dispatch = useDispatch()
   const [selectedCategory, setSelectedCategory] = useState('All categories')
   useEffect(() => {
@@ -60,7 +58,7 @@ const ShopProducts = () => {
             </span>
           </span>
         )}
-        <div>
+        <div className="mt-4">
           <Row>
             {products
               .filter((item) =>

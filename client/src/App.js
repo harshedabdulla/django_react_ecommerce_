@@ -26,6 +26,7 @@ import BakeryPage from './pages/BakeryPage'
 import CleanPage from './pages/CleanPage'
 import MeatPage from './pages/MeatPage'
 import DairyPage from './pages/DairyPage'
+import CartItem from './pages/CartItem'
 
 const App = () => {
   return (
@@ -52,6 +53,7 @@ const App = () => {
               component={CleanPage}
               exact
             />
+            <Route path="/shop/cart/" component={CartItem} exact />
 
             <Route
               path="/product-update/:id/"

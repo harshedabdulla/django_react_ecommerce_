@@ -17,6 +17,7 @@ import {
   CHANGE_DELIVERY_STATUS_REQUEST,
   CHANGE_DELIVERY_STATUS_SUCCESS,
   CHANGE_DELIVERY_STATUS_FAIL,
+  ADD_TO_CART,
 } from '../constants/index'
 
 import axios from 'axios'
@@ -230,7 +231,7 @@ export const getProductsByCategory = (category) => async (dispatch) => {
     })
 
     // call API with category parameter
-    const { data } = await axios.get(`/api/products?category=${category}`)
+    const { data } = await axios.get(`/api/product-category/${category}`)
 
     dispatch({
       type: PRODUCTS_LIST_SUCCESS,
@@ -241,5 +242,41 @@ export const getProductsByCategory = (category) => async (dispatch) => {
       type: PRODUCTS_LIST_FAIL,
       payload: error.message,
     })
+  }
+}
+
+export const getProductsBySearchTerm = (searchTerm) => async (dispatch) => {
+  try {
+    dispatch({
+      type: PRODUCTS_LIST_REQUEST,
+    })
+
+    // Make API request to fetch products based on the search term
+    const { data } = await axios.get(`/api/product-search?name=${searchTerm}`)
+
+    dispatch({
+      type: PRODUCTS_LIST_SUCCESS,
+      payload: data,
+    })
+  } catch (error) {
+    dispatch({
+      type: PRODUCTS_LIST_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}
+export const addToCart = (productId) => async (dispatch) => {
+  try {
+    const response = await axios.post('/api/product/add-to-cart', { productId })
+
+    dispatch({
+      type: ADD_TO_CART,
+      payload: response.data,
+    })
+  } catch (error) {
+    console.error('Error adding to cart:', error)
   }
 }

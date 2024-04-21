@@ -1,14 +1,18 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { getProductsBySearchTerm } from '../actions/productActions' // Import the action to fetch products by search term
 
 function SearchBarForProducts() {
+  const dispatch = useDispatch()
   let history = useHistory()
   const [searchTerm, setSearchTerm] = useState('')
 
   const onSubmit = (e) => {
     e.preventDefault()
     if (searchTerm) {
-      history.push(`/?searchTerm=${searchTerm}`)
+      dispatch(getProductsBySearchTerm(searchTerm)) // Dispatch action to fetch products by search term
+      history.push(`/search?name=${searchTerm}`) // Update the URL with the search term
     }
   }
 

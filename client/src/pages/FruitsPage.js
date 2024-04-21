@@ -32,7 +32,7 @@ const FruitsPage = () => {
           </span>
         </span>
       )}
-      <div>
+      <div className="mt-4">
         <Row>
           {products
             .filter((item) =>

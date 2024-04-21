@@ -9,7 +9,7 @@ const Categories = ({ categories }) => {
   }
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       <button
         className="bg-blue-500 font-bold py-2 px-4 text-white rounded-none inline-flex items-center"
         onClick={() => setShowDropdown(!showDropdown)}
@@ -21,7 +21,7 @@ const Categories = ({ categories }) => {
         ></i>
       </button>
       {showDropdown && (
-        <ul className="absolute bg-white border rounded-none">
+        <ul className="absolute bg-white border rounded-none z-50">
           {categories.map((category, index) => (
             <li
               key={index}
