@@ -20,6 +20,12 @@ import ProductUpdatePage from './pages/ProductUpdatePage'
 import NotFound from './pages/NotFoundPage'
 import Footer from './components/Footer'
 import ShopProducts from './pages/ShopProducts'
+import GroceriesPage from './pages/GroceriesPage'
+import FruitsPage from './pages/FruitsPage'
+import BakeryPage from './pages/BakeryPage'
+import CleanPage from './pages/CleanPage'
+import MeatPage from './pages/MeatPage'
+import DairyPage from './pages/DairyPage'
 
 const App = () => {
   return (
@@ -32,6 +38,21 @@ const App = () => {
             <Route path="/new-product/" component={ProductCreatePage} exact />
             <Route path="/product/:id/" component={ProductDetailsPage} exact />
             <Route path="/shop/" component={ShopProducts} exact />
+            <Route path="/shop/Groceries/" component={GroceriesPage} exact />
+            <Route
+              path="/shop/Fruits-and-vegetables"
+              component={FruitsPage}
+              exact
+            />
+            <Route path="/shop/Dairy-products" component={DairyPage} exact />
+            <Route path="/shop/Bakery/" component={BakeryPage} exact />
+            <Route path="/shop/Meat/" component={MeatPage} exact />
+            <Route
+              path="/shop/Cleaning-supplies/"
+              component={CleanPage}
+              exact
+            />
+
             <Route
               path="/product-update/:id/"
               component={ProductUpdatePage}

@@ -198,33 +198,6 @@ const ProductsListPage = () => {
           <img src={fr} alt="fruits" className="w-20 h-16 mb-12" />
         </div>
       </div>
-
-      {error && <Message variant="danger">{error}</Message>}
-      {loading && (
-        <span style={{ display: 'flex' }}>
-          <h5>Getting Products</h5>
-          <span className="ml-2">
-            <Spinner animation="border" />
-          </span>
-        </span>
-      )}
-      <div>
-        <Row>
-          {products
-            .filter((item) =>
-              selectedCategory === 'All categories'
-                ? true
-                : item.category === selectedCategory
-            )
-            .map((product, idx) => (
-              <Col key={product.id} sm={12} md={6} lg={4} xl={3}>
-                <div className="mx-2">
-                  <Product product={product} />
-                </div>
-              </Col>
-            ))}
-        </Row>
-      </div>
     </div>
   )
 }

@@ -1,7 +1,12 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 
-const Categories = ({ categories, handleCategoryClick }) => {
+const Categories = ({ categories }) => {
   const [showDropdown, setShowDropdown] = useState(false)
+
+  const handleCategoryClick = () => {
+    setShowDropdown(false) // Close dropdown when category is clicked
+  }
 
   return (
     <div className="relative">
@@ -21,12 +26,14 @@ const Categories = ({ categories, handleCategoryClick }) => {
             <li
               key={index}
               className="px-4 py-2 cursor-pointer hover:bg-gray-200"
-              onClick={() => {
-                handleCategoryClick(category)
-                setShowDropdown(false)
-              }}
             >
-              {category}
+              <Link
+                to={`/shop/${category.replace(/\s+/g, '-')}`}
+                onClick={handleCategoryClick}
+              >
+                {category}
+              </Link>
+              {/* Use Link component */}
             </li>
           ))}
         </ul>

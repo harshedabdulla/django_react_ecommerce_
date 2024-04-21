@@ -10,7 +10,7 @@ import Categories from '../components/Categories'
 function NavBar() {
   let history = useHistory()
   const dispatch = useDispatch()
-
+  let searchTerm = history.location.search
   // login reducer
   const userLoginReducer = useSelector((state) => state.userLoginReducer)
   const { userInfo } = userLoginReducer
