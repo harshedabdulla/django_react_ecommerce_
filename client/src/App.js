@@ -18,10 +18,9 @@ import OrdersListPage from './pages/OrdersListPage'
 import ProductCreatePage from './pages/ProductCreatePage'
 import ProductUpdatePage from './pages/ProductUpdatePage'
 import NotFound from './pages/NotFoundPage'
-
+import Footer from './components/Footer'
 
 const App = () => {
-
   return (
     <div>
       <Router>
@@ -31,24 +30,57 @@ const App = () => {
             <Route path="/" component={ProductListPage} exact />
             <Route path="/new-product/" component={ProductCreatePage} exact />
             <Route path="/product/:id/" component={ProductDetailsPage} exact />
-            <Route path="/product-update/:id/" component={ProductUpdatePage} exact />
-            <Route path="/product/:id/checkout/" component={CheckoutPage} exact />
+            <Route
+              path="/product-update/:id/"
+              component={ProductUpdatePage}
+              exact
+            />
+            <Route
+              path="/product/:id/checkout/"
+              component={CheckoutPage}
+              exact
+            />
             <Route path="/payment-status" component={PaymentStatus} exact />
             <Route path="/login" component={Login} exact />
             <Route path="/register" component={Register} exact />
             <Route path="/account" component={AccountPage} exact />
-            <Route path="/account/update/" component={AccountUpdatePage} exact />
-            <Route path="/account/delete/" component={DeleteUserAccountPage} exact />
-            <Route path="/stripe-card-details" component={CardDetailsPage} exact />
-            <Route path="/stripe-card-update" component={CardUpdatePage} exact />
-            <Route path="/all-addresses/" component={AllAddressesOfUserPage} exact />
-            <Route path="/all-addresses/:id/" component={AddressUpdatePage} exact />
+            <Route
+              path="/account/update/"
+              component={AccountUpdatePage}
+              exact
+            />
+            <Route
+              path="/account/delete/"
+              component={DeleteUserAccountPage}
+              exact
+            />
+            <Route
+              path="/stripe-card-details"
+              component={CardDetailsPage}
+              exact
+            />
+            <Route
+              path="/stripe-card-update"
+              component={CardUpdatePage}
+              exact
+            />
+            <Route
+              path="/all-addresses/"
+              component={AllAddressesOfUserPage}
+              exact
+            />
+            <Route
+              path="/all-addresses/:id/"
+              component={AddressUpdatePage}
+              exact
+            />
             <Route path="/all-orders/" component={OrdersListPage} exact />
             <Route path="" component={NotFound} exact />
           </Switch>
         </div>
+        <Footer />
       </Router>
-    </div >
+    </div>
   )
 }
 
