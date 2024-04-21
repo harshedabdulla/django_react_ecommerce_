@@ -29,7 +29,7 @@ class ProductCategoryView(APIView):
 class ProductSearchView(APIView):
 
     def get(self, request):
-        query = request.query_params.get('query', '')
+        query = request.query_params.get('name', '')
         products = Product.objects.filter(description__icontains=query)
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
