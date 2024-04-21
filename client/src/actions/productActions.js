@@ -271,6 +271,7 @@ export const getProductsBySearchTerm = (searchTerm) => async (dispatch) => {
 }
 export const addToCart = (productId) => async (dispatch) => {
   try {
+    console.log('productId:', productId)
     const response = await axios.post('/cart/cart-add/', {
       productId,
       userDetails,
