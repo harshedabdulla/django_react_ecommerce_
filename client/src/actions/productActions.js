@@ -269,13 +269,20 @@ export const getProductsBySearchTerm = (searchTerm) => async (dispatch) => {
     })
   }
 }
-export const addToCart = (productId) => async (dispatch) => {
+export const addToCart = (id) => async (dispatch, getState) => {
+  const {
+    userLoginReducer: { userInfo },
+  } = getState()
+
+  const config = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${userInfo.token}`,
+    },
+  }
+  console.log(config)
   try {
-    console.log('productId:', productId)
-    const response = await axios.post('/cart/cart-add/', {
-      productId,
-      userDetails,
-    })
+    const response = await axios.post(`/cart/cart-add/${id}/`, config)
 
     dispatch({
       type: ADD_TO_CART,
