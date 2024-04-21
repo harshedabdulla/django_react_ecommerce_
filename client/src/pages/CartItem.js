@@ -7,8 +7,8 @@ function CartItem() {
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get('/api/cart') // Replace '/api/cart' with your actual API endpoint
-        setCartItems(response.data.cartItems) // Assuming the response contains cart items
+        const response = await axios.get('/cart/cart') // Replace '/api/cart' with your actual API endpoint
+        setCartItems(response.data) // Assuming the response contains cart items
       } catch (error) {
         console.error('Error fetching cart items:', error)
         // Handle error
@@ -29,7 +29,7 @@ function CartItem() {
           {cartItems.map((item) => (
             <div key={item.id}>
               <p>
-                {item.name} - Quantity: {item.quantity}
+                {item.name}: {item.price}
               </p>
               {/* Other product details like price, image, etc. */}
             </div>
@@ -37,10 +37,7 @@ function CartItem() {
           {/* Calculate and display total price */}
           <p>
             Total Price:{' '}
-            {cartItems.reduce(
-              (acc, item) => acc + item.price * item.quantity,
-              0
-            )}
+            {cartItems.reduce((acc, item) => acc + item.price * 1, 0)}
           </p>
         </div>
       )}
