@@ -19,6 +19,7 @@ import ProductCreatePage from './pages/ProductCreatePage'
 import ProductUpdatePage from './pages/ProductUpdatePage'
 import NotFound from './pages/NotFoundPage'
 import Footer from './components/Footer'
+import ShopProducts from './pages/ShopProducts'
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
             <Route path="/" component={ProductListPage} exact />
             <Route path="/new-product/" component={ProductCreatePage} exact />
             <Route path="/product/:id/" component={ProductDetailsPage} exact />
+            <Route path="/shop/" component={ShopProducts} exact />
             <Route
               path="/product-update/:id/"
               component={ProductUpdatePage}

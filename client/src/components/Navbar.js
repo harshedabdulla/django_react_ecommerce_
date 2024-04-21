@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
 import { logout } from '../actions/userActions'
 import { useHistory } from 'react-router-dom'
 import SearchBarForProducts from './SearchBarForProducts'
+import Categories from '../components/Categories'
 
 function NavBar() {
   let history = useHistory()
@@ -13,12 +14,15 @@ function NavBar() {
   // login reducer
   const userLoginReducer = useSelector((state) => state.userLoginReducer)
   const { userInfo } = userLoginReducer
-
+  const [selectedCategory, setSelectedCategory] = useState('All categories')
   // logout
   const logoutHandler = () => {
     dispatch(logout())
     history.push('/login')
     window.location.reload()
+  }
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category)
   }
 
   return (
@@ -87,7 +91,7 @@ function NavBar() {
               <LinkContainer to="/">
                 <Nav.Link className="hover:text-blue-600">HOME</Nav.Link>
               </LinkContainer>
-              <LinkContainer to="/">
+              <LinkContainer to="/shop">
                 <Nav.Link className="hover:text-blue-600">SHOP</Nav.Link>
               </LinkContainer>
               <LinkContainer to="/">
@@ -107,6 +111,38 @@ function NavBar() {
           </Navbar.Collapse>
         </Container>
       </Navbar>
+      <div className="flex justify-between items-center px-8">
+        {/* Categories */}
+        <div className="flex-shrink-0">
+          <Categories
+            categories={[
+              'Groceries',
+              'Fruits and vegetables',
+              'Dairy products',
+              'Meat',
+              'Bakery',
+              'Cleaning supplies',
+            ]}
+            handleCategoryClick={handleCategoryClick}
+          />
+        </div>
+
+        {/* Search Bar */}
+        <div className="flex-grow ml-8">
+          <SearchBarForProducts />
+        </div>
+
+        {/* Contact Info */}
+        <div className="flex items-center ml-4">
+          <div className="mr-2">
+            <i className="fas fa-phone-alt"></i>
+          </div>
+          <div>
+            <p className="text-md font-medium">+91 00000 64352</p>
+            <p className="text-xs text-gray-500 text-left">Support 24/7</p>
+          </div>
+        </div>
+      </div>
     </header>
   )
 }

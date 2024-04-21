@@ -71,40 +71,7 @@ const ProductsListPage = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center">
-        {/* Categories */}
-        <div className="flex-shrink-0">
-          <Categories
-            categories={[
-              'Groceries',
-              'Fruits and vegetables',
-              'Dairy products',
-              'Meat',
-              'Bakery',
-              'Cleaning supplies',
-            ]}
-            handleCategoryClick={handleCategoryClick}
-          />
-        </div>
-
-        {/* Search Bar */}
-        <div className="flex-grow ml-8">
-          <SearchBarForProducts />
-        </div>
-
-        {/* Contact Info */}
-        <div className="flex items-center ml-4">
-          <div className="mr-2">
-            <i className="fas fa-phone-alt"></i>
-          </div>
-          <div>
-            <p className="text-md font-medium">+91 00000 64352</p>
-            <p className="text-sm">Support 24/7</p>
-          </div>
-        </div>
-
-        {/* Image */}
-      </div>
+      <div className="flex justify-between items-center"></div>
       <div className="ml-60">
         <img
           src="https://i0.wp.com/www.globaltrademag.com/wp-content/uploads/2020/04/shutterstock_121120492.jpg?w=1422&ssl=1"

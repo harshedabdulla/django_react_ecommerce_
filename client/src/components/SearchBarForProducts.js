@@ -20,14 +20,14 @@ function SearchBarForProducts() {
             type="text"
             value={searchTerm}
             placeholder="Search our store..."
-            className="form-control flex-grow border-gray-400 rounded-none text-gray-400"
+            className="form-control flex-grow border-gray-200 rounded-none text-gray-200"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button
             type="submit"
-            className="btn btn-primary button-focus-css rounded-none"
+            className="bg-blue-500 h-10 px-4 font-bold text-white button-focus-css rounded-none"
           >
-            Search
+            SEARCH
           </button>
         </div>
       </form>
