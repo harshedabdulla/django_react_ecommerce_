@@ -282,7 +282,7 @@ export const addToCart = (id) => async (dispatch, getState) => {
   }
   console.log(config)
   try {
-    const response = await axios.put(`/cart/cart-add/${id}/`, config)
+    const response = await axios.get(`/cart/cart-add/${id}/`, config)
 
     dispatch({
       type: ADD_TO_CART,

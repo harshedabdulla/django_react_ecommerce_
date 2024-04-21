@@ -4,10 +4,8 @@ from rest_framework.response import Response
 from .models import Cart, User
 from .serializers import CartSerializer
 from product.models import Product
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
 from product.serializers import ProductSerializer
-
+from rest_framework import authentication, permissions
 class CartView(APIView):
 
     def get(self, request):
@@ -23,9 +21,9 @@ class CartView(APIView):
             return Response({"detail": "Cart not found."}, status=status.HTTP_404_NOT_FOUND)
 
 class AddProductToCartView(APIView):
-    permission_classes = [IsAuthenticated]
 
-    def put(self, request, pk):
+    def get(self, request, pk):
+        print(request.user)
         user_cart = Cart.objects.get(user=request.user)
         
         try:
