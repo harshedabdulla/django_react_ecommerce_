@@ -21,6 +21,7 @@ import {
 } from '../constants/index'
 
 import axios from 'axios'
+import { userDetails } from './userActions'
 
 // products list
 export const getProductsList = () => async (dispatch) => {
@@ -270,7 +271,10 @@ export const getProductsBySearchTerm = (searchTerm) => async (dispatch) => {
 }
 export const addToCart = (productId) => async (dispatch) => {
   try {
-    const response = await axios.post('/api/product/add-to-cart', { productId })
+    const response = await axios.post('/cart/cart-add/', {
+      productId,
+      userDetails,
+    })
 
     dispatch({
       type: ADD_TO_CART,
