@@ -24,7 +24,7 @@ function ProductDetailsPage({ history, match }) {
   const dispatch = useDispatch()
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const handleAddToCart = () => {
-    dispatch(addToCart(product))
+    dispatch(addToCart(product.id))
     setShowSuccessMessage(true)
     // Dispatch addToCart action with product details
     // You can also show a success message or perform any other action upon adding to cart
