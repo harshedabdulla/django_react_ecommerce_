@@ -25,8 +25,11 @@ class AddProductToCartView(APIView):
     def post(self, request):
         print(self)
         print(request.data)
+        print(request.user)
+        print(request.data.get('product_id'))
         product_id = request.data.get('product_id')
         user = request.user
+    
         user_cart = Cart.objects.get(user=user)
         
         try:
