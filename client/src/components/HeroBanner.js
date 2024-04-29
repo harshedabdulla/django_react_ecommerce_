@@ -8,7 +8,7 @@ const HeroBanner = ({ title, subheading }) => {
         alt=""
         className="h-32 w-full object-cover"
       />
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center mt-8">
         <div className="text-4xl font-bold text-white mb-24">
           {title}
           <div className="text-sm text-white mb-24 flex items-center text-center mx-4">
