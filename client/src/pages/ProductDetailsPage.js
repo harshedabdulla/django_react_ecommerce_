@@ -200,7 +200,7 @@ function ProductDetailsPage({ history, match }) {
                     </h4>
                     <Link to={`${product.id}/checkout/`}>
                       <button className="btn btn-primary my-12">
-                        <span>Pay with Stripe</span>
+                        <span>Pay now</span>
                       </button>
                     </Link>
                   </div>

@@ -27,6 +27,10 @@ import CleanPage from './pages/CleanPage'
 import MeatPage from './pages/MeatPage'
 import DairyPage from './pages/DairyPage'
 import CartItem from './pages/CartItem'
+import SearchBarForProducts from './components/SearchBarForProducts'
+import SearchResultPage from './components/SearchResultPage'
+import CheckoutProductsPage from './pages/CheckoutProductsPage'
+import ContactUs from './pages/ContactUs'
 
 const App = () => {
   return (
@@ -40,6 +44,8 @@ const App = () => {
             <Route path="/product/:id/" component={ProductDetailsPage} exact />
             <Route path="/shop/" component={ShopProducts} exact />
             <Route path="/shop/Groceries/" component={GroceriesPage} exact />
+            <Route path="/search" component={SearchBarForProducts} exact />
+            <Route path="/search-results" component={SearchResultPage} exact />
             <Route
               path="/shop/Fruits-and-vegetables"
               component={FruitsPage}
@@ -65,6 +71,13 @@ const App = () => {
               component={CheckoutPage}
               exact
             />
+            <Route
+              path="/product/checkout/"
+              component={CheckoutProductsPage}
+              exact
+            />
+
+            <Route path="/contactus/" component={ContactUs} exact />
             <Route path="/payment-status" component={PaymentStatus} exact />
             <Route path="/login" component={Login} exact />
             <Route path="/register" component={Register} exact />

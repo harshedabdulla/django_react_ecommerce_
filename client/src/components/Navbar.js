@@ -97,7 +97,7 @@ function NavBar() {
               <LinkContainer to="/">
                 <Nav.Link className="hover:text-blue-600">PAGES</Nav.Link>
               </LinkContainer>
-              <LinkContainer to="/">
+              <LinkContainer to="/contactus">
                 <Nav.Link className="hover:text-blue-600">CONTACT</Nav.Link>
               </LinkContainer>
 
