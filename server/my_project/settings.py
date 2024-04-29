@@ -17,7 +17,8 @@ from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+RAZOR_KEY_ID = "rzp_test_lKLwu13AnAdmPU"
+RAZOR_KEY_SECRET = "VJiDoTDqGRUDu5ZAqUIO7ejU"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -42,7 +43,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
-
+    'payment',
     'product',
     'payments',
     'account',
