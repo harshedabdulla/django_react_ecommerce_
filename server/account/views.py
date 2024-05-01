@@ -6,7 +6,6 @@ from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework import authentication, permissions
 from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer 
@@ -23,7 +22,7 @@ from .serializers import (
 
 
 # register user
-@csrf_exempt
+
 class UserRegisterView(APIView):
     """To Register the User"""
 
