@@ -18,6 +18,9 @@ import {
   CHANGE_DELIVERY_STATUS_SUCCESS,
   CHANGE_DELIVERY_STATUS_FAIL,
   ADD_TO_CART,
+  CART_ITEMS_REQUEST,
+  CART_ITEMS_SUCCESS,
+  CART_ITEMS_FAIL,
 } from '../constants/index'
 
 import axios from 'axios'
@@ -290,5 +293,42 @@ export const addToCart = (id) => async (dispatch, getState) => {
     })
   } catch (error) {
     console.error('Error adding to cart:', error)
+  }
+}
+
+export const getCartItems = (userId) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: CART_ITEMS_REQUEST,
+    })
+
+    const {
+      userLoginReducer: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+      params: {
+        userId: userId, // Pass the userId as a query parameter
+      },
+    }
+
+    const { data } = await axios.get('/cart/cart', config)
+    console.log(data)
+    dispatch({
+      type: CART_ITEMS_SUCCESS,
+      payload: data,
+    })
+  } catch (error) {
+    console.error('Error fetching cart items:', error)
+    dispatch({
+      type: CART_ITEMS_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
   }
 }

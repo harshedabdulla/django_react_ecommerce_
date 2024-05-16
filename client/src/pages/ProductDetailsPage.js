@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { deleteProduct, getProductDetails } from '../actions/productActions'
 import Message from '../components/Message'
+import axios from 'axios'
+import useRazorpay from 'react-razorpay'
 import {
   Spinner,
   Row,
@@ -20,62 +22,95 @@ import {
 } from '../constants'
 
 import { addToCart } from '../actions/productActions'
+
 function ProductDetailsPage({ history, match }) {
+  const [Razorpay] = useRazorpay()
   const dispatch = useDispatch()
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
-  const handleAddToCart = () => {
-    dispatch(addToCart(product.id))
-    setShowSuccessMessage(true)
-    // Dispatch addToCart action with product details
-    // You can also show a success message or perform any other action upon adding to cart
-  }
-  // modal state and functions
+  const [userInfo, setUserInfo] = useState(null) // State to hold user info
+
+  // Modal state and functions
   const [show, setShow] = useState(false)
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
 
-  // product details reducer
-  const productDetailsReducer = useSelector(
+  // Product details reducer
+  const { loading, error, product } = useSelector(
     (state) => state.productDetailsReducer
   )
-  const { loading, error, product } = productDetailsReducer
 
-  // login reducer
-  const userLoginReducer = useSelector((state) => state.userLoginReducer)
-  const { userInfo } = userLoginReducer
-
-  // product details reducer
-  const deleteProductReducer = useSelector(
+  // Product delete reducer
+  const { success: productDeletionSuccess } = useSelector(
     (state) => state.deleteProductReducer
   )
-  const { success: productDeletionSuccess } = deleteProductReducer
 
   useEffect(() => {
     dispatch(getProductDetails(match.params.id))
-    dispatch({
-      type: UPDATE_PRODUCT_RESET,
-    })
-    dispatch({
-      type: CREATE_PRODUCT_RESET,
-    })
-    dispatch({
-      type: CARD_CREATE_RESET,
-    })
-  }, [dispatch, match])
+    dispatch({ type: UPDATE_PRODUCT_RESET })
+    dispatch({ type: CREATE_PRODUCT_RESET })
+    dispatch({ type: CARD_CREATE_RESET })
 
-  // product delete confirmation
+    // Retrieve user info from localStorage when the component mounts
+    const storedUserInfo = localStorage.getItem('userInfo')
+    if (storedUserInfo) {
+      setUserInfo(JSON.parse(storedUserInfo))
+    }
+  }, [dispatch, match.params.id])
+
+  // Product delete confirmation
   const confirmDelete = () => {
     dispatch(deleteProduct(match.params.id))
     handleClose()
   }
 
-  // after product deletion
-  if (productDeletionSuccess) {
-    alert('Product successfully deleted.')
-    history.push('/')
-    dispatch({
-      type: DELETE_PRODUCT_RESET,
-    })
+  // After product deletion
+  useEffect(() => {
+    if (productDeletionSuccess) {
+      alert('Product successfully deleted.')
+      history.push('/')
+      dispatch({ type: DELETE_PRODUCT_RESET })
+    }
+  }, [productDeletionSuccess, dispatch, history])
+
+  const paynow = async () => {
+    try {
+      if (!userInfo) {
+        console.error('User not authenticated')
+        // You can redirect the user to the login page or show a message here
+        return
+      }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+
+      const response = await axios.post('/orders/order-create/', {}, config)
+      const data = response.data
+      console.log(data)
+
+      const options = {
+        key: data.razorpay_merchant_key,
+        amount: '10000',
+        currency: 'INR',
+        name: 'Dj Razorpay',
+        order_id: data.razorpay_order_id,
+        callback_url: 'http://localhost:3000/',
+      }
+
+      const rzp1 = new Razorpay(options)
+      rzp1.open()
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+
+  const handleAddToCart = () => {
+    dispatch(addToCart(product.id))
+    setShowSuccessMessage(true)
+    // Dispatch addToCart action with product details
+    // You can also show a success message or perform any other action upon adding to cart
   }
 
   return (
@@ -106,7 +141,6 @@ function ProductDetailsPage({ history, match }) {
           </Modal.Footer>
         </Modal>
       </div>
-
       {/* Modal End */}
 
       {loading && (
@@ -125,9 +159,7 @@ function ProductDetailsPage({ history, match }) {
             <Row>
               <Col md={6}>
                 <Card.Img variant="top" src={product.image} height="420" />
-
                 {/* Product edit and delete conditions */}
-
                 {userInfo && userInfo.admin ? (
                   <span style={{ display: 'flex' }}>
                     <button
@@ -137,7 +169,6 @@ function ProductDetailsPage({ history, match }) {
                     >
                       Delete Product
                     </button>
-
                     <button
                       className="ml-2 mt-2 btn btn-primary btn-sm button-focus-css"
                       onClick={() =>
@@ -152,10 +183,8 @@ function ProductDetailsPage({ history, match }) {
                   ''
                 )}
               </Col>
-
               <Col sm>
                 <div className="font-bold text-2xl">{product.name}</div>
-
                 <span className="text-red-600 text-2xl font-bold mt-4">
                   ₹ {product.price}
                 </span>
@@ -177,7 +206,6 @@ function ProductDetailsPage({ history, match }) {
                     Product added to cart successfully!
                   </div>
                 )}
-
                 <Link to="/shop/cart/">
                   <button className=" bg-blue-500 mt-4 w-1/2 text-white py-2 border-black border-2">
                     <span>CART</span>
@@ -198,11 +226,9 @@ function ProductDetailsPage({ history, match }) {
                         Free orders above ₹499
                       </span>
                     </h4>
-                    <Link to={`${product.id}/checkout/`}>
-                      <button className="btn btn-primary my-12">
-                        <span>Pay now</span>
-                      </button>
-                    </Link>
+                    <button className="btn btn-primary my-12" onClick={paynow}>
+                      <span>Razorpay now</span>
+                    </button>
                   </div>
                 ) : (
                   <Message variant="danger">Out Of Stock!</Message>

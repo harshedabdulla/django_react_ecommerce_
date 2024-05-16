@@ -2,17 +2,45 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import HeroBanner from '../components/HeroBanner'
 import { Link } from 'react-router-dom'
+import useRazorpay from 'react-razorpay'
+
 function CartItem() {
   const [cartItems, setCartItems] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [Razorpay] = useRazorpay()
+
+  const paynow = () => {
+    const response = axios.post('/orders/order-create/') //ith fix cheyynm
+    const data = response.data
+    console.log(response.data)
+    var options = {
+      key: data.razorpay_merchant_key,
+
+      amount: data.cost,
+      currency: 'INR',
+
+      name: 'Dj Razorpay',
+
+      order_id: data.razorpay_order_id,
+      callback_url: 'http://localhost:3000/',
+    }
+
+    var rzp1 = new Razorpay(options)
+
+    rzp1.open()
+  }
 
   useEffect(() => {
     const fetchCartItems = async () => {
+      setLoading(true)
       try {
         const response = await axios.get('/cart/cart')
         setCartItems(response.data)
-        console.log('Cart items:', response.data)
+        setLoading(false)
       } catch (error) {
-        console.error('Error fetching cart items:', error)
+        setError('Error fetching cart items')
+        setLoading(false)
       }
     }
 
@@ -22,7 +50,11 @@ function CartItem() {
   return (
     <div className="px-4">
       <HeroBanner title={'Shopping Cart'} subheading={'Home - Shop'} />
-      {cartItems.length === 0 ? (
+      {loading ? (
+        <div className="text-center mt-4 text-gray-700">Loading...</div>
+      ) : error ? (
+        <div className="text-center mt-4 text-red-700">{error}</div>
+      ) : cartItems.length === 0 ? (
         <div className="text-center mt-4 text-gray-700">Cart is empty</div>
       ) : (
         <div className="mt-8">
@@ -66,11 +98,7 @@ function CartItem() {
                 ${cartItems.reduce((acc, item) => acc + item.price * 1, 0)}
               </p>
             </div>
-            <Link to="/product/checkout/">
-              <button className="bg-blue-500 font-bold text-white my-4 w-full py-2">
-                Proceed to Checkout
-              </button>
-            </Link>
+            <button onClick={paynow}>Order</button>
           </div>
         </div>
       )}

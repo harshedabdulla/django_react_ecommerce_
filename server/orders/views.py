@@ -80,7 +80,7 @@ class CreateOrderView(APIView):
 			cost=cost,
 			razorpay_order_id=razorpay_order_id,
 			razorpay_merchant_key=settings.RAZOR_KEY_ID,
-			razorpay_amount=cost,
+			razorpay_amount='10000',
 			currency="INR",
 			callback_url = 'http://127.0.0.1:8000/orders/paymenthandler/'
 		)

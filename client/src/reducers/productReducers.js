@@ -24,6 +24,9 @@ import {
   ADD_TO_CART,
   REMOVE_FROM_CART,
   UPDATE_CART_ITEM,
+  CART_ITEMS_REQUEST,
+  CART_ITEMS_SUCCESS,
+  CART_ITEMS_FAIL,
 } from '../constants/index'
 
 // products list
@@ -233,26 +236,34 @@ export const changeDeliveryStatusReducer = (state = {}, action) => {
       return state
   }
 }
-
-// cartReducer.js
-
-const initialState = {
-  cartItems: [], // Array to store cart items
-  // Other cart-related state properties
+const initialStat = {
+  cartItems: [],
+  loading: false,
+  error: '',
 }
 
-const cartReducer = (state = initialState, action) => {
+export const cartItemsReducer = (state = initialStat, action) => {
   switch (action.type) {
-    case ADD_TO_CART:
-      // Logic to add item to cart
+    case CART_ITEMS_REQUEST:
       return {
         ...state,
-        cartItems: [...state.cartItems, action.payload],
+        loading: true,
+        error: '',
       }
-    // Handle other cart actions like REMOVE_FROM_CART, UPDATE_CART_ITEM
+    case CART_ITEMS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        cartItems: action.payload, // Make sure action.payload is an array
+        error: '',
+      }
+    case CART_ITEMS_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      }
     default:
       return state
   }
 }
-
-export default cartReducer
