@@ -92,7 +92,7 @@ function ProductDetailsPage({ history, match }) {
 
       const options = {
         key: data.razorpay_merchant_key,
-        amount: '10000',
+        amount: '10000 * 100',
         currency: 'INR',
         name: 'Dj Razorpay',
         order_id: data.razorpay_order_id,
