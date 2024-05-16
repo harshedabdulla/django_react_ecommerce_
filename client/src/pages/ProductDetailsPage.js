@@ -52,7 +52,9 @@ function ProductDetailsPage({ history, match }) {
 
     // Retrieve user info from localStorage when the component mounts
     const storedUserInfo = localStorage.getItem('userInfo')
+    console.log('Stored userInfo:', storedUserInfo)
     if (storedUserInfo) {
+      console.log('Parsed userInfo:', JSON.parse(storedUserInfo))
       setUserInfo(JSON.parse(storedUserInfo))
     }
   }, [dispatch, match.params.id])
@@ -85,16 +87,17 @@ function ProductDetailsPage({ history, match }) {
           Authorization: `Bearer ${userInfo.token}`,
         },
       }
-
+      console.log('config:', config)
+      console.log('userInfo:', userInfo)
       const response = await axios.post('/orders/order-create/', {}, config)
       const data = response.data
       console.log(data)
 
       const options = {
         key: data.razorpay_merchant_key,
-        amount: '10000 * 100',
+        amount: '10000',
         currency: 'INR',
-        name: 'Dj Razorpay',
+        name: 'ecommerce application',
         order_id: data.razorpay_order_id,
         callback_url: 'http://localhost:3000/',
       }
@@ -213,7 +216,7 @@ function ProductDetailsPage({ history, match }) {
                 </Link>
                 <hr className="my-4" />
                 {product.stock ? (
-                  <div>
+                  <div className="my-8">
                     <h4 className="text-xl font-bold">
                       {' '}
                       Availability :{' '}
@@ -226,9 +229,6 @@ function ProductDetailsPage({ history, match }) {
                         Free orders above ₹499
                       </span>
                     </h4>
-                    <button className="btn btn-primary my-12" onClick={paynow}>
-                      <span>Razorpay now</span>
-                    </button>
                   </div>
                 ) : (
                   <Message variant="danger">Out Of Stock!</Message>

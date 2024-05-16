@@ -1,42 +1,63 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import HeroBanner from '../components/HeroBanner'
-import { Link } from 'react-router-dom'
-import useRazorpay from 'react-razorpay'
 
-function CartItem() {
+import HeroBanner from '../components/HeroBanner'
+
+import { useDispatch, useSelector } from 'react-redux'
+import { getProductDetails } from '../actions/productActions'
+import Message from '../components/Message'
+import axios from 'axios'
+import useRazorpay from 'react-razorpay'
+import { Link } from 'react-router-dom'
+import {
+  CREATE_PRODUCT_RESET,
+  UPDATE_PRODUCT_RESET,
+  CARD_CREATE_RESET,
+} from '../constants'
+
+function CartItem({ history, match }) {
+  const dispatch = useDispatch()
   const [cartItems, setCartItems] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [userInfo, setUserInfo] = useState(null)
   const [Razorpay] = useRazorpay()
 
-  const paynow = () => {
-    const response = axios.post('/orders/order-create/') //ith fix cheyynm
-    const data = response.data
-    console.log(response.data)
-    var options = {
-      key: data.razorpay_merchant_key,
-
-      amount: data.cost,
-      currency: 'INR',
-
-      name: 'Dj Razorpay',
-
-      order_id: data.razorpay_order_id,
-      callback_url: 'http://localhost:3000/',
+  useEffect(() => {
+    // Retrieve user info from localStorage when the component mounts
+    const storedUserInfo = localStorage.getItem('userInfo')
+    console.log('Stored userInfo:', storedUserInfo)
+    if (storedUserInfo) {
+      console.log('Parsed userInfo:', JSON.parse(storedUserInfo))
+      setUserInfo(JSON.parse(storedUserInfo))
     }
-
-    var rzp1 = new Razorpay(options)
-
-    rzp1.open()
-  }
+  }, []) // Only run this effect once when the component mounts
 
   useEffect(() => {
     const fetchCartItems = async () => {
       setLoading(true)
       try {
-        const response = await axios.get('/cart/cart')
-        setCartItems(response.data)
+        if (!userInfo) {
+          // console.error('logged in user found')
+          // You can redirect the user to the login page or show a message here
+          return
+        }
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+        console.log('config:', config)
+        console.log('userInfo:', userInfo)
+        // Fetch cart items from local storage
+        const storedCartItems = localStorage.getItem('cartItems')
+        if (storedCartItems) {
+          setCartItems(JSON.parse(storedCartItems))
+        }
+        // Fetch latest cart items from the server
+        const response = await axios.get('/cart/cart', config)
+        const data = response.data
+        setCartItems(data)
         setLoading(false)
       } catch (error) {
         setError('Error fetching cart items')
@@ -45,7 +66,51 @@ function CartItem() {
     }
 
     fetchCartItems()
-  }, [])
+  }, [userInfo]) // Run this effect whenever userInfo changes
+
+  useEffect(() => {
+    // Retrieve cart items from local storage when the component mounts
+    const storedCartItems = localStorage.getItem('cartItems')
+    if (storedCartItems) {
+      setCartItems(JSON.parse(storedCartItems))
+    }
+  }, []) // Empty dependency array ensures this effect runs only once when the component mounts
+  useEffect(() => {
+    // Store cart items in local storage whenever they change
+    localStorage.setItem('cartItems', JSON.stringify(cartItems))
+  }, [cartItems]) // This effect runs whenever cartItems change
+
+  const paynow = async () => {
+    try {
+      if (!userInfo) {
+        console.error('logged in user found')
+        // You can redirect the user to the login page or show a message here
+        return
+      }
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+
+      const response = await axios.post('/orders/order-create/', {}, config)
+      const data = response.data
+      console.log(response.data)
+      const options = {
+        key: data.razorpay_merchant_key,
+        amount: data.cost,
+        currency: 'INR',
+        name: 'ecommerce application',
+        order_id: data.razorpay_order_id,
+        callback_url: 'http://localhost:3000/',
+      }
+
+      const rzp1 = new Razorpay(options)
+      rzp1.open()
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
 
   return (
     <div className="px-4">
@@ -61,7 +126,7 @@ function CartItem() {
           <div className="border-b-2 border-gray-200 pb-2">
             <div className="grid grid-cols-2 gap-4 font-bold">
               <div className="col-span-1">Product</div>
-              <div className="col-span-1">Price</div>
+              <div className="col-span-1 ml-auto">Price</div>
             </div>
           </div>
           <hr className="my-4" />
@@ -79,7 +144,7 @@ function CartItem() {
                 />
                 <div>{item.name}</div>
               </div>
-              <div className="font-bold">${item.price}</div>
+              <div className="font-bold">₹{item.price}</div>
             </div>
           ))}
           <Link to="/shop" className="text-blue-500 mt-4">
@@ -88,17 +153,20 @@ function CartItem() {
             </div>
           </Link>
           {/* Cart total */}
-
-          <div className=" my-4 bg-gray-200 w-1/4 p-2 px-4">
-            {/* Calculate and display total price */}
+          <div className="my-4 bg-gray-200 w-1/4 p-2 px-4">
             <p className="mt-2 text-xl font-bold text-gray-800">Cart Total</p>
             <div className="flex justify-between mt-4">
               <p className="text-gray-600 text-lg">Total price: </p>
               <p className="text-lg font-bold text-red-500">
-                ${cartItems.reduce((acc, item) => acc + item.price * 1, 0)}
+                ₹{cartItems.reduce((acc, item) => acc + item.price * 1, 0)}
               </p>
             </div>
-            <button onClick={paynow}>Order</button>
+            <button
+              onClick={paynow}
+              className="bg-blue-500 px-4 py-1 text-white justify-end mt-4 mb-2 w-full rounded-none"
+            >
+              Order
+            </button>
           </div>
         </div>
       )}

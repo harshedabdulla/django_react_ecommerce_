@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Order
 from cart.models import Cart
 from .serializers import OrderSerializer
+from decimal import Decimal
 
 
 razorpay_client = razorpay.Client(
@@ -66,9 +67,11 @@ class CreateOrderView(APIView):
 	def post(self, request):
 		user = request.user
 		cart = Cart.objects.get(user=user)
-		cost = sum(product.price for product in cart.products.all())
+		cost = sum(product.price for product in cart.products.all()) * 100
+		amount_in_paisa = int(cost)
 		
-		razorpay_order = razorpay_client.order.create(dict(amount=cost,
+  
+		razorpay_order = razorpay_client.order.create(dict(amount=amount_in_paisa,
 													currency="INR",
 													payment_capture='0'))
 		
@@ -77,7 +80,7 @@ class CreateOrderView(APIView):
 		order = Order.objects.create(
 			user=user,
 			payment_status="Pending",
-			cost=cost,
+			cost=str(cost),
 			razorpay_order_id=razorpay_order_id,
 			razorpay_merchant_key=settings.RAZOR_KEY_ID,
 			razorpay_amount='10000',
