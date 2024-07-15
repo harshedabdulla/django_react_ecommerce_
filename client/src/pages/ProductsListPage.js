@@ -17,6 +17,7 @@ import cereals from '../assets/featured/cereals.jpeg'
 import coffee from '../assets/featured/coffee.jpeg'
 import grapes from '../assets/featured/grapes.jpeg'
 import mango from '../assets/featured/mango.jpeg'
+import axios from 'axios'
 import fr from '../assets/fr.png'
 
 const ProductsListPage = () => {
@@ -24,6 +25,7 @@ const ProductsListPage = () => {
   let searchTerm = history.location.search
   const dispatch = useDispatch()
   const [selectedCategory, setSelectedCategory] = useState('All categories')
+  const [bestsellers, setBestsellers] = useState([])
   useEffect(() => {
     const slider = new Glide('.glide-01', {
       type: 'carousel',
@@ -47,6 +49,8 @@ const ProductsListPage = () => {
       },
     }).mount()
 
+    fetchTopProducts()
+
     return () => {
       slider.destroy()
     }
@@ -61,6 +65,11 @@ const ProductsListPage = () => {
   const handleCategoryClick = (category) => {
     setSelectedCategory(category)
   }
+
+  const fetchTopProducts = async () => {
+      const response = await axios.get('/api/products/top/');
+      setBestsellers(response.data);
+  };
 
   return (
     <div>
@@ -151,35 +160,17 @@ const ProductsListPage = () => {
       {/* Featured Products Section*/}
       <div className="items-center">
         <div>
-          <h1 className="text-3xl font-bold text-center">Featured Products</h1>
+          <h1 className="text-3xl font-bold text-center">Bestsellers</h1>
           <hr className="w-16 mx-auto border-2 border-blue-500 mt-2" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
+        {bestsellers.map((product) => (
           <div>
-            <img src={grapes} alt="grapes" className="w-48 h-48 m-auto" />
-            <h4 className="text-center mt-4">Grapes</h4>
-            <h4 className="text-center font-bold"> ₹99</h4>
-          </div>
-          <div>
-            <img src={carrots} alt="carrots" className="w-48 h-48 m-auto" />
-            <h4 className="text-center mt-4">Carrots</h4>
-            <h4 className="text-center font-bold"> ₹49</h4>
-          </div>
-          <div>
-            <img src={mango} alt="mango" className="w-48 h-48 m-auto" />
-            <h4 className="text-center mt-4">Mango</h4>
-            <h4 className="text-center font-bold"> ₹79</h4>
-          </div>
-          <div>
-            <img src={coffee} alt="coffee" className="w-48 h-48 m-auto" />
-            <h4 className="text-center mt-4">Coffee</h4>
-            <h4 className="text-center font-bold"> ₹199</h4>
-          </div>
-          <div>
-            <img src={cereals} alt="cereals" className="w-48 h-48 m-auto" />
-            <h4 className="text-center mt-4">Cereals</h4>
-            <h4 className="text-center font-bold"> ₹99</h4>
-          </div>
+          <img src={product.image} alt="grapes" className="w-48 h-48 m-auto" />
+          <h4 className="text-center mt-4">{product.name}</h4>
+          <h4 className="text-center font-bold"> ₹{product.price}</h4>
+        </div>
+        ))}
         </div>
       </div>
       {/* Fruits Section */}
