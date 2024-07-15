@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import HeroBanner from '../components/HeroBanner'
+import axios from 'axios'
 
 const ContactUs = () => {
   const [feedback, setFeedback] = useState('')
@@ -8,12 +9,18 @@ const ContactUs = () => {
     setFeedback(e.target.value)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // You can implement your logic for handling the feedback submission here
-    console.log('Feedback submitted:', feedback)
-    // Reset the feedback input
-    setFeedback('')
+    try {
+      const response = await axios.post('/feedback/submit-feedback/', {
+        feedback,
+      })
+      console.log('Feedback submitted:', response.data)
+      // Reset the feedback input
+      setFeedback('')
+    } catch (error) {
+      console.error('Error submitting feedback:', error)
+    }
   }
 
   return (

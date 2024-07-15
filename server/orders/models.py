@@ -1,8 +1,5 @@
 from django.db import models
-
-# Create your models here.
 from django.contrib.auth.models import User
-from django.db import models
 from product.models import Product
 
 class Order(models.Model):
@@ -25,12 +22,12 @@ class Order(models.Model):
     payment_status = models.CharField(max_length=50, choices=PAYMENT_STATUS_CHOICES, default='Pending')
     delivery_status = models.CharField(max_length=50, choices=DELIVERY_STATUS_CHOICES, default='in_transit')
     cost = models.DecimalField(max_digits=8, decimal_places=2)  
-    razorpay_order_id=models.CharField(max_length=50)
-    razorpay_merchant_key=models.CharField(max_length=50)
-    razorpay_amount=models.DecimalField(max_digits=8, decimal_places=2)
-    currency=models.CharField(max_length=50)
+    razorpay_order_id = models.CharField(max_length=50)
+    razorpay_merchant_key = models.CharField(max_length=50)
+    razorpay_amount = models.DecimalField(max_digits=8, decimal_places=2)
+    currency = models.CharField(max_length=50)
     products = models.ManyToManyField(Product)
     callback_url = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"Order {self.id} by {self.user.user.username}"
+        return f"Order {self.id} by {self.user.username}"

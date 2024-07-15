@@ -6,7 +6,6 @@ import {
   updateProductReducer,
   deleteProductReducer,
   changeDeliveryStatusReducer,
-  cartReducer,
   cartItemsReducer,
 } from './productReducers'
 

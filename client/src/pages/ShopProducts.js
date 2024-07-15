@@ -41,6 +41,10 @@ const ShopProducts = () => {
         </div>
       </div>
       {/* Hot Products Section */}
+      <div className="text-3xl font-bold text-left mt-4 font-bold">
+        Hot offers
+      </div>
+      <hr className="w-36 border-4 border-blue-500 mt-2" />
       <div className="mt-8">
         <CarouselIndicatorsInside />
         <hr className="w-40 border-[2px] border-gray-400 mt-8" />

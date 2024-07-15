@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react'
-
-import HeroBanner from '../components/HeroBanner'
-
-import { useDispatch, useSelector } from 'react-redux'
-import { getProductDetails } from '../actions/productActions'
-import Message from '../components/Message'
+import { useDispatch } from 'react-redux'
 import axios from 'axios'
 import useRazorpay from 'react-razorpay'
 import { Link } from 'react-router-dom'
+import HeroBanner from '../components/HeroBanner'
 import {
   CREATE_PRODUCT_RESET,
   UPDATE_PRODUCT_RESET,
@@ -21,6 +17,7 @@ function CartItem({ history, match }) {
   const [error, setError] = useState('')
   const [userInfo, setUserInfo] = useState(null)
   const [Razorpay] = useRazorpay()
+  const [isLoggedIn, setIsLoggedIn] = useState(true)
 
   useEffect(() => {
     // Retrieve user info from localStorage when the component mounts
@@ -29,6 +26,8 @@ function CartItem({ history, match }) {
     if (storedUserInfo) {
       console.log('Parsed userInfo:', JSON.parse(storedUserInfo))
       setUserInfo(JSON.parse(storedUserInfo))
+    } else {
+      setIsLoggedIn(false)
     }
   }, []) // Only run this effect once when the component mounts
 
@@ -37,8 +36,7 @@ function CartItem({ history, match }) {
       setLoading(true)
       try {
         if (!userInfo) {
-          // console.error('logged in user found')
-          // You can redirect the user to the login page or show a message here
+          // User not logged in, show message
           return
         }
 
@@ -65,7 +63,9 @@ function CartItem({ history, match }) {
       }
     }
 
-    fetchCartItems()
+    if (userInfo) {
+      fetchCartItems()
+    }
   }, [userInfo]) // Run this effect whenever userInfo changes
 
   useEffect(() => {
@@ -75,6 +75,7 @@ function CartItem({ history, match }) {
       setCartItems(JSON.parse(storedCartItems))
     }
   }, []) // Empty dependency array ensures this effect runs only once when the component mounts
+
   useEffect(() => {
     // Store cart items in local storage whenever they change
     localStorage.setItem('cartItems', JSON.stringify(cartItems))
@@ -115,7 +116,9 @@ function CartItem({ history, match }) {
   return (
     <div className="px-4">
       <HeroBanner title={'Shopping Cart'} subheading={'Home - Shop'} />
-      {loading ? (
+      {!isLoggedIn ? (
+        <div className="text-center mt-4 text-red-700">User not logged in</div>
+      ) : loading ? (
         <div className="text-center mt-4 text-gray-700">Loading...</div>
       ) : error ? (
         <div className="text-center mt-4 text-red-700">{error}</div>
@@ -161,12 +164,11 @@ function CartItem({ history, match }) {
                 ₹{cartItems.reduce((acc, item) => acc + item.price * 1, 0)}
               </p>
             </div>
-            <button
-              onClick={paynow}
-              className="bg-blue-500 px-4 py-1 text-white justify-end mt-4 mb-2 w-full rounded-none"
-            >
-              Order
-            </button>
+            <Link to="/checkout" className="text-blue-500 mt-4">
+              <button className="bg-blue-500 px-4 py-1 text-white justify-end mt-4 mb-2 w-full rounded-none">
+                Proceed to checkout
+              </button>
+            </Link>
           </div>
         </div>
       )}

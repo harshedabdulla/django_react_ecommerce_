@@ -31,6 +31,7 @@ import SearchBarForProducts from './components/SearchBarForProducts'
 import SearchResultPage from './components/SearchResultPage'
 import CheckoutProductsPage from './pages/CheckoutProductsPage'
 import ContactUs from './pages/ContactUs'
+import PaymentSuccessPage from './pages/PaymentSuccessPage'
 
 const App = () => {
   return (
@@ -46,6 +47,7 @@ const App = () => {
             <Route path="/shop/Groceries/" component={GroceriesPage} exact />
             <Route path="/search" component={SearchBarForProducts} exact />
             <Route path="/search-results" component={SearchResultPage} exact />
+            <Route path="/checkout/" component={CheckoutPage} exact />
             <Route
               path="/shop/Fruits-and-vegetables"
               component={FruitsPage}
@@ -110,6 +112,11 @@ const App = () => {
             <Route
               path="/all-addresses/:id/"
               component={AddressUpdatePage}
+              exact
+            />
+            <Route
+              path="/paymentsuccess/"
+              component={PaymentSuccessPage}
               exact
             />
             <Route path="/all-orders/" component={OrdersListPage} exact />

@@ -1,145 +1,176 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import axios from 'axios'
+import useRazorpay from 'react-razorpay'
+import HeroBanner from '../components/HeroBanner'
 import { Link, useHistory } from 'react-router-dom'
-import { Row, Col, Container, Image, Card } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
-import { getProductDetails } from '../actions/productActions'
-import CreateCardComponent from '../components/CreateCardComponent'
-import ChargeCardComponent from '../components/ChargeCardComponent'
-import Message from '../components/Message'
-import { Spinner } from 'react-bootstrap'
-import { savedCardsList } from '../actions/cardActions'
-import UserAddressComponent from '../components/UserAddressComponent'
-import { checkTokenValidation, logout } from '../actions/userActions'
-import {CHARGE_CARD_RESET} from '../constants/index'
+import CreateAddressComponent from '../pages/CreateAddressComponent'
+import { createUserAddress } from '../actions/userActions' // Import the action to create address
 
-const CheckoutPage = ({ match }) => {
+const CheckoutPage = () => {
+  const dispatch = useDispatch()
+  const history = useHistory() // Initialize useHistory
+  const [cartItems, setCartItems] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [userInfo, setUserInfo] = useState(null)
+  const [Razorpay] = useRazorpay()
+  const [address, setAddress] = useState({
+    name: '',
+    phone_number: '',
+    house_no: '',
+    landmark: '',
+    city: '',
+    state: '',
+    pin_code: '',
+  })
 
-    let history = useHistory()
-
-    const dispatch = useDispatch()
-    const [addressSelected, setAddressSelected] = useState(false)
-    const [selectedAddressId, setSelectedAddressId] = useState(0)
-
-    // set address id handler
-    const handleAddressId = (id) => {
-        if (id) {
-            setAddressSelected(true)
-        }
-        setSelectedAddressId(id)
+  useEffect(() => {
+    const storedUserInfo = localStorage.getItem('userInfo')
+    if (storedUserInfo) {
+      setUserInfo(JSON.parse(storedUserInfo))
     }
-      
-    // check token validation reducer
-    const checkTokenValidationReducer = useSelector(state => state.checkTokenValidationReducer)
-    const { error: tokenError } = checkTokenValidationReducer
+  }, [])
 
-    // product details reducer
-    const productDetailsReducer = useSelector(state => state.productDetailsReducer)
-    const { loading, error, product } = productDetailsReducer
-
-    // create card reducer
-    const createCardReducer = useSelector(state => state.createCardReducer)
-    const { error: cardCreationError, success, loading: cardCreationLoading } = createCardReducer
-
-    // login reducer
-    const userLoginReducer = useSelector(state => state.userLoginReducer)
-    const { userInfo } = userLoginReducer
-
-    // saved cards list reducer
-    const savedCardsListReducer = useSelector(state => state.savedCardsListReducer)
-    const { stripeCards } = savedCardsListReducer
-
-    useEffect(() => {
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      setLoading(true)
+      try {
         if (!userInfo) {
-            history.push("/login")
-        } else {
-            dispatch(checkTokenValidation())
-            dispatch(getProductDetails(match.params.id))
-            dispatch(savedCardsList())
-            dispatch({
-                type: CHARGE_CARD_RESET
-            })
+          setLoading(false)
+          return
         }
-    }, [dispatch, match, history, success, userInfo])
 
-    if (userInfo && tokenError === "Request failed with status code 401") {
-        alert("Session expired, please login again.")
-        dispatch(logout())
-        history.push("/login")
-        window.location.reload()
+        const config = {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+
+        const storedCartItems = localStorage.getItem('cartItems')
+        if (storedCartItems) {
+          setCartItems(JSON.parse(storedCartItems))
+        }
+
+        const response = await axios.get('/cart/cart', config)
+        const data = response.data
+        setCartItems(data)
+      } catch (error) {
+        setError('Error fetching cart items')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCartItems()
+  }, [userInfo])
+
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems))
+  }, [cartItems])
+
+  const handleChange = (e) => {
+    setAddress({ ...address, [e.target.name]: e.target.value })
+  }
+
+  const saveAddress = (e) => {
+    e.preventDefault()
+    dispatch(createUserAddress(address)) // Dispatch the action to create address
+  }
+
+  const paynow = async () => {
+    try {
+      if (!userInfo) {
+        console.error('No logged in user found')
+        return
+      }
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
       }
 
-    return (
-        <div>
-            {cardCreationError ? <Message variant='danger'>{cardCreationError}</Message> : ""}
-            {loading
-                &&
-                <span style={{ display: "flex" }}>
-                    <h5>Getting Checkout Info</h5>
-                    <span className="ml-2">
-                        <Spinner animation="border" />
-                    </span>
-                </span>}
-            {!loading && cardCreationLoading ?
-                <span style={{ display: "flex" }}>
-                    <h5>Checking your card</h5>
-                    <span className="ml-2">
-                        <Spinner animation="border" />
-                    </span>
-                </span> : ""}
-            {error ? <Message variant='danger'>{error}</Message> :
-                <Container>
-                    <Row>
-                        <Col xs={6}>
-                            <h3>Checkout Summary</h3>
-                            <Card className="mb-4">
-                                <Card.Body>
-                                    <Container>
-                                        <Row>
-                                            <Col>
-                                                <Image src={product.image} alt="image" height="180" />
-                                            </Col>
-                                            <Col>
-                                                <h5 className="card-title text-capitalize">
-                                                    {product.name}
-                                                </h5>
-                                                <span className="card-text text-success">₹ {product.price}</span>
-                                            </Col>
-                                        </Row>
-                                    </Container>
-                                </Card.Body>
-                            </Card>
+      // Save the address before proceeding with payment
+      await dispatch(createUserAddress(address))
 
-                            <span style={{ display: "flex" }}>
-                                <h3>Billing Address</h3>
-                                <Link
-                                    className="ml-2 mt-2"
-                                    to="/all-addresses/"
-                                >
-                                    Edit/Add Address
-                                </Link>
-                            </span>
-                            <UserAddressComponent handleAddressId={handleAddressId} />
-                        </Col>
-                        <Col xs={6}>
-                            <h3>
-                                Payments Section
-                            </h3>
-                            {success ?
-                                <ChargeCardComponent
-                                    selectedAddressId={selectedAddressId}
-                                    addressSelected={addressSelected}
-                                    product={product}
-                                />
-                                :
-                                <CreateCardComponent
-                                    addressSelected={addressSelected}
-                                    stripeCards={stripeCards} />}
-                        </Col>
-                    </Row>
-                </Container>
-            }
+      const response = await axios.post('/orders/order-create/', {}, config)
+      const data = response.data
+      const options = {
+        key: data.razorpay_merchant_key,
+        amount: data.cost,
+        currency: 'INR',
+        name: 'Ecommerce Application',
+        order_id: data.razorpay_order_id,
+        callback_url: 'http://localhost:3000/',
+        handler: function (response) {
+          console.log(response)
+          history.push('/paymentsuccess') // Redirect to payment success page
+        },
+        modal: {
+          ondismiss: function () {
+            console.log('Checkout form closed')
+          },
+        },
+        method: {
+          upi: true,
+          card: true,
+          netbanking: true,
+          wallet: true,
+        },
+        theme: {
+          color: '#3399cc',
+        },
+      }
+
+      const rzp1 = new Razorpay(options)
+      rzp1.open()
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+
+  return (
+    <div>
+      <HeroBanner title="Checkout" />
+      <div className="container mx-auto mt-4 px-4">
+        <h1 className="font-bold text-3xl">Billing Details</h1>
+        <hr className="my-4" />
+        <div className="flex flex-col md:flex-row md:space-x-8 mb-4">
+          <div className="md:w-3/4">
+            <CreateAddressComponent
+              address={address}
+              handleChange={handleChange}
+              saveAddress={saveAddress}
+            />
+          </div>
+          <div className="md:w-1/4">
+            <div className="bg-gray-200 p-4 rounded-md">
+              <p className="text-xl font-bold text-gray-800 mb-4">Cart Total</p>
+              <div className="flex justify-between mb-4">
+                <p className="text-gray-600 text-lg">Total price: </p>
+                <p className="text-lg font-bold text-red-500">
+                  ₹
+                  {cartItems.reduce(
+                    (acc, item) =>
+                      acc +
+                      (parseFloat(item.price) || 0) *
+                        (parseInt(item.quantity) || 1),
+                    0
+                  )}
+                </p>
+              </div>
+              <button
+                className="bg-blue-500 px-4 py-2 text-white w-full rounded-md"
+                onClick={paynow}
+              >
+                Proceed to checkout
+              </button>
+            </div>
+          </div>
         </div>
-    )
+      </div>
+    </div>
+  )
 }
 
 export default CheckoutPage

@@ -1,6 +1,6 @@
 // ProductsListPage.js
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { getProductsList } from '../actions/productActions'
 
 import { useHistory } from 'react-router-dom'

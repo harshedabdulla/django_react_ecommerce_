@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { deleteProduct, getProductDetails } from '../actions/productActions'
+import {
+  deleteProduct,
+  getProductDetails,
+  addToCart,
+} from '../actions/productActions'
 import Message from '../components/Message'
 import axios from 'axios'
 import useRazorpay from 'react-razorpay'
@@ -13,19 +17,13 @@ import {
   Button,
   Modal,
 } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
-import {
-  CREATE_PRODUCT_RESET,
-  DELETE_PRODUCT_RESET,
-  UPDATE_PRODUCT_RESET,
-  CARD_CREATE_RESET,
-} from '../constants'
+import { Link, useHistory } from 'react-router-dom'
+import StarRating from '../components/StarRating' // Assuming you have a StarRating component
 
-import { addToCart } from '../actions/productActions'
-
-function ProductDetailsPage({ history, match }) {
+function ProductDetailsPage({ match }) {
   const [Razorpay] = useRazorpay()
   const dispatch = useDispatch()
+  const history = useHistory()
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [userInfo, setUserInfo] = useState(null) // State to hold user info
 
@@ -46,33 +44,37 @@ function ProductDetailsPage({ history, match }) {
 
   useEffect(() => {
     dispatch(getProductDetails(match.params.id))
-    dispatch({ type: UPDATE_PRODUCT_RESET })
-    dispatch({ type: CREATE_PRODUCT_RESET })
-    dispatch({ type: CARD_CREATE_RESET })
-
-    // Retrieve user info from localStorage when the component mounts
-    const storedUserInfo = localStorage.getItem('userInfo')
-    console.log('Stored userInfo:', storedUserInfo)
-    if (storedUserInfo) {
-      console.log('Parsed userInfo:', JSON.parse(storedUserInfo))
-      setUserInfo(JSON.parse(storedUserInfo))
-    }
   }, [dispatch, match.params.id])
 
-  // Product delete confirmation
+  useEffect(() => {
+    if (productDeletionSuccess) {
+      alert('Product successfully deleted.')
+      history.push('/')
+    }
+  }, [productDeletionSuccess, history])
+
+  useEffect(() => {
+    // Retrieve user info from localStorage when the component mounts
+    const storedUserInfo = localStorage.getItem('userInfo')
+    if (storedUserInfo) {
+      setUserInfo(JSON.parse(storedUserInfo))
+    }
+  }, [])
+
   const confirmDelete = () => {
     dispatch(deleteProduct(match.params.id))
     handleClose()
   }
 
-  // After product deletion
-  useEffect(() => {
-    if (productDeletionSuccess) {
-      alert('Product successfully deleted.')
-      history.push('/')
-      dispatch({ type: DELETE_PRODUCT_RESET })
+  const handleRatingSubmit = (rating) => {
+    if (userInfo) {
+      // Dispatch action to add product rating here
+      console.log(`Submitting rating ${rating}`)
+    } else {
+      // Handle user not logged in
+      console.log('User not logged in')
     }
-  }, [productDeletionSuccess, dispatch, history])
+  }
 
   const paynow = async () => {
     try {
@@ -87,11 +89,9 @@ function ProductDetailsPage({ history, match }) {
           Authorization: `Bearer ${userInfo.token}`,
         },
       }
-      console.log('config:', config)
-      console.log('userInfo:', userInfo)
+
       const response = await axios.post('/orders/order-create/', {}, config)
       const data = response.data
-      console.log(data)
 
       const options = {
         key: data.razorpay_merchant_key,
@@ -110,80 +110,90 @@ function ProductDetailsPage({ history, match }) {
   }
 
   const handleAddToCart = () => {
-    dispatch(addToCart(product.id))
-    setShowSuccessMessage(true)
-    // Dispatch addToCart action with product details
-    // You can also show a success message or perform any other action upon adding to cart
+    if (!userInfo) {
+      // Redirect to login page or show a message
+      history.push('/login')
+    } else {
+      dispatch(addToCart(product.id))
+      setShowSuccessMessage(true)
+    }
   }
 
   return (
     <div>
       {/* Modal Start*/}
-      <div>
-        <Modal show={show} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>
-              <i
-                style={{ color: '#e6e600' }}
-                className="fas fa-exclamation-triangle"
-              ></i>{' '}
-              Delete Confirmation
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            Are you sure you want to delete this product{' '}
-            <em>"{product.name}"</em>?
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="danger" onClick={() => confirmDelete()}>
-              Confirm Delete
-            </Button>
-            <Button variant="primary" onClick={handleClose}>
-              Cancel
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </div>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <i
+              style={{ color: '#e6e600' }}
+              className="fas fa-exclamation-triangle"
+            ></i>{' '}
+            Delete Confirmation
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete this product <em>"{product.name}"</em>
+          ?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={confirmDelete}>
+            Confirm Delete
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
       {/* Modal End */}
 
-      {loading && (
-        <span style={{ display: 'flex' }}>
-          <h5>Getting Product Details</h5>
-          <span className="ml-2">
-            <Spinner animation="border" />
-          </span>
-        </span>
-      )}
-      {error ? (
+      {loading ? (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+          }}
+        >
+          <Spinner animation="border" role="status">
+            <span className="sr-only">Loading...</span>
+          </Spinner>
+        </div>
+      ) : error ? (
         <Message variant="danger">{error}</Message>
       ) : (
-        <div>
+        <div className="my-8">
           <Container>
             <Row>
               <Col md={6}>
-                <Card.Img variant="top" src={product.image} height="420" />
+                <Card.Img
+                  variant="top"
+                  src={product.image}
+                  className="h-64 w-full object-contain"
+                />
                 {/* Product edit and delete conditions */}
-                {userInfo && userInfo.admin ? (
-                  <span style={{ display: 'flex' }}>
-                    <button
-                      className="btn mt-2 btn-danger btn-sm button-focus-css"
+                {userInfo && userInfo.admin && (
+                  <div style={{ display: 'flex' }}>
+                    <Button
+                      variant="danger"
+                      className="btn-sm button-focus-css"
                       style={{ width: '100%' }}
-                      onClick={() => handleShow()}
+                      onClick={handleShow}
                     >
                       Delete Product
-                    </button>
-                    <button
-                      className="ml-2 mt-2 btn btn-primary btn-sm button-focus-css"
+                    </Button>
+                    <Button
+                      variant="primary"
+                      className="btn-sm button-focus-css ml-2"
                       onClick={() =>
                         history.push(`/product-update/${product.id}/`)
                       }
                       style={{ width: '100%' }}
                     >
                       Edit Product
-                    </button>
-                  </span>
-                ) : (
-                  ''
+                    </Button>
+                  </div>
                 )}
               </Col>
               <Col sm>
@@ -191,39 +201,38 @@ function ProductDetailsPage({ history, match }) {
                 <span className="text-red-600 text-2xl font-bold mt-4">
                   ₹ {product.price}
                 </span>
-                <span className="text-gray-600 text-sm">
+                <div className="text-gray-600 text-sm">
                   <p>{product.description}</p>
-                </span>
+                  <StarRating onSubmit={handleRatingSubmit} />
+                </div>
                 {/* Add to cart button */}
-                <button
+                <Button
                   onClick={handleAddToCart}
-                  className=" bg-blue-500 mt-4 w-1/2 text-white py-2 border-black border-2"
+                  className=" bg-blue-500 w-fit text-white py-2 border-black border-2"
                 >
                   <span>ADD TO CART</span>
-                </button>
+                </Button>
                 {showSuccessMessage && (
                   <div
-                    className="bg-green-400 w-1/2 my-4 py-2 text-center"
+                    className="bg-green-400 w-fit my-4 py-2 text-center"
                     role="alert"
                   >
                     Product added to cart successfully!
                   </div>
                 )}
                 <Link to="/shop/cart/">
-                  <button className=" bg-blue-500 mt-4 w-1/2 text-white py-2 border-black border-2">
+                  <Button className=" bg-blue-500 ml-2 w-fit text-white py-2 border-black border-2">
                     <span>CART</span>
-                  </button>
+                  </Button>
                 </Link>
                 <hr className="my-4" />
                 {product.stock ? (
                   <div className="my-8">
                     <h4 className="text-xl font-bold">
-                      {' '}
                       Availability :{' '}
                       <span className="font-medium text-xl">In Stock</span>
                     </h4>
                     <h4 className="text-xl font-bold">
-                      {' '}
                       Shipping :{' '}
                       <span className="font-medium text-xl">
                         Free orders above ₹499
