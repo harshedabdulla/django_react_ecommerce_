@@ -1,8 +1,8 @@
-from .models import Product
+from .models import Product, Rating
 from rest_framework import status
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, RatingSerializer
 from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
@@ -45,6 +45,42 @@ class ProductSearchView(APIView):
         products = Product.objects.filter(description__icontains=query)
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class ProductRateView(APIView):
+
+    def get(self, request, pk):
+        user = request.user
+        product = Product.objects.get(id=pk)
+        data = request.data
+        product = {
+            "product": product,
+            "user": user,
+            "rating": data["rating"],
+        }
+        serializer = RatingSerializer(product, many=False)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    
+class ProductRatingsView(APIView):
+
+    def get(self, request, pk):
+        user = request.user
+        product = Product.objects.get(id=pk)
+        
+        ratings = Rating.objects.filter(product=product)
+        avg = sum(rating.rating for rating in ratings) / ratings.count()
+        return Response({"rating":avg}, status=status.HTTP_200_OK)
+    
+class ProductOwnRatingView(APIView):
+
+    def get(self, request, pk):
+        user = request.user
+        product = Product.objects.get(id=pk)
+        rating = Rating.objects.get(product=product, user=user)
+        return Response({"rating":rating.rating}, status=status.HTTP_200_OK)
 
 
 class ProductDetailView(APIView):
