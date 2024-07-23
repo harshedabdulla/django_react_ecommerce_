@@ -48,21 +48,19 @@ class ProductSearchView(APIView):
     
 class ProductRateView(APIView):
 
-    def get(self, request, pk):
+    def post(self, request, pk):
         user = request.user
         product = Product.objects.get(id=pk)
         data = request.data
-        product = {
-            "product": product,
-            "user": user,
-            "rating": data["rating"],
-        }
-        serializer = RatingSerializer(product, many=False)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prevrating =  Rating.objects.get(product=product, user=user)
+            print(prevrating)
+            prevrating.delete()
+        except:
+            pass
+        Rating.objects.create(product=product, user=user, rating=data["rating"])
+
+        return Response({"rating":data["rating"]}, status=status.HTTP_200_OK)
     
 class ProductRatingsView(APIView):
 
@@ -71,7 +69,11 @@ class ProductRatingsView(APIView):
         product = Product.objects.get(id=pk)
         
         ratings = Rating.objects.filter(product=product)
-        avg = sum(rating.rating for rating in ratings) / ratings.count()
+        if ratings.count()==0:
+            avg = 0
+        else:
+            avg = sum(rating.rating for rating in ratings) / ratings.count()
+        print(avg)
         return Response({"rating":avg}, status=status.HTTP_200_OK)
     
 class ProductOwnRatingView(APIView):
@@ -79,8 +81,12 @@ class ProductOwnRatingView(APIView):
     def get(self, request, pk):
         user = request.user
         product = Product.objects.get(id=pk)
-        rating = Rating.objects.get(product=product, user=user)
-        return Response({"rating":rating.rating}, status=status.HTTP_200_OK)
+        try:
+            rating = Rating.objects.get(product=product, user=user).rating
+        except:
+            rating = 0
+        print(rating)
+        return Response({"rating":rating}, status=status.HTTP_200_OK)
 
 
 class ProductDetailView(APIView):

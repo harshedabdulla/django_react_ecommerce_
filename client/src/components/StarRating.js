@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 
-const StarRating = ({ onSubmit }) => {
-  const [rating, setRating] = useState(null)
+const StarRating = ({ onSubmit, valuek=0 }) => {
+  const [rating, setRating] = useState(valuek)
 
   const handleClick = (value) => {
     if (value === rating) {

@@ -9,9 +9,9 @@ urlpatterns = [
     path('product-update/<str:pk>/', views.ProductEditView.as_view(), name="product-update"),
     path('product-delete/<str:pk>/', views.ProductDeleteView.as_view(), name="product-delete"),
     path('product-search/', views.ProductSearchView.as_view(), name="product-search"),
-    path('product-rate/', views.ProductRateView.as_view(), name="product-rate"),
-    path('product-myrating/', views.ProductOwnRatingView.as_view(), name="product-ownrating"),
-    path('product-ratings/', views.ProductRatingsView.as_view(), name="product-ratings"),
+    path('product-rate/<str:pk>/', views.ProductRateView.as_view(), name="product-rate"),
+    path('product-myrating/<str:pk>/', views.ProductOwnRatingView.as_view(), name="product-ownrating"),
+    path('product-ratings/<str:pk>/', views.ProductRatingsView.as_view(), name="product-ratings"),
     path('product-category/<str:category_name>/', views.ProductCategoryView.as_view(), name="product-search-by-category"),
     path('products/top/', views.TopProductsView.as_view(), name='top-products'),
 ]

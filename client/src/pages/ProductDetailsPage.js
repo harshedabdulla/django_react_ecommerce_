@@ -26,7 +26,7 @@ function ProductDetailsPage({ match }) {
   const history = useHistory()
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [userInfo, setUserInfo] = useState(null) // State to hold user info
-
+  const [rating, setRating] = useState(0) 
   // Modal state and functions
   const [show, setShow] = useState(false)
   const handleClose = () => setShow(false)
@@ -45,31 +45,56 @@ function ProductDetailsPage({ match }) {
   useEffect(() => {
     dispatch(getProductDetails(match.params.id))
   }, [dispatch, match.params.id])
-
-  useEffect(() => {
+  
+  useEffect(async () => {
     if (productDeletionSuccess) {
+
       alert('Product successfully deleted.')
       history.push('/')
     }
   }, [productDeletionSuccess, history])
 
-  useEffect(() => {
+  useEffect(async () => {
     // Retrieve user info from localStorage when the component mounts
     const storedUserInfo = localStorage.getItem('userInfo')
     if (storedUserInfo) {
+      getOwnRatings(JSON.parse(storedUserInfo), match.params.id)
       setUserInfo(JSON.parse(storedUserInfo))
+      
     }
+    const config = {
+      headers: {
+        Authorization: `Bearer ${JSON.parse(storedUserInfo).token}`,
+      },
+    }
+    const response = await axios.get(`/api/product-myrating/${match.params.id}/`, config);
+    console.log(response.data["rating"])
+    setRating(response.data["rating"])
   }, [])
+
+  const getOwnRatings = async (userInfo, id) =>{
+    if (userInfo && product.id){
+      
+      
+    }
+  }
 
   const confirmDelete = () => {
     dispatch(deleteProduct(match.params.id))
     handleClose()
   }
 
-  const handleRatingSubmit = (rating) => {
+  const handleRatingSubmit = async (rating) => {
     if (userInfo) {
       // Dispatch action to add product rating here
       console.log(`Submitting rating ${rating}`)
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+      const response = await axios.post(`/api/product-rate/${product.id}/`,{"rating":rating}, config);
+      console.log(response)
     } else {
       // Handle user not logged in
       console.log('User not logged in')
@@ -203,9 +228,10 @@ function ProductDetailsPage({ match }) {
                 </span>
                 <div className="text-gray-600 text-sm">
                   <p>{product.description}</p>
-                  <StarRating onSubmit={handleRatingSubmit} />
+                  <StarRating valuek={rating} onSubmit={handleRatingSubmit} />
                 </div>
                 {/* Add to cart button */}
+
                 <Button
                   onClick={handleAddToCart}
                   className=" bg-blue-500 w-fit text-white py-2 border-black border-2"
@@ -213,6 +239,7 @@ function ProductDetailsPage({ match }) {
                   <span>ADD TO CART</span>
                 </Button>
                 {showSuccessMessage && (
+
                   <div
                     className="bg-green-400 w-fit my-4 py-2 text-center"
                     role="alert"
