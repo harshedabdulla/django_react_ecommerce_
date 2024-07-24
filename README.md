@@ -1,12 +1,19 @@
 
-### Backend
+## Backend 
 
-`python3 -m venv env` 
-`source env/bin/activate` 
+### Backend Install
+
 `pip install -r requirements.txt`
+
+### Backend Run
 `python manage.py runserver` 
 
-### Frontend
+## Frontend
+
+## Frontend Install
+
 `npm i`
+
+## Frontend Run
 
 `npm start`
