@@ -7,24 +7,21 @@ import Message from '../components/Message'
 import { Spinner, Row, Col } from 'react-bootstrap'
 import Product from '../components/Product'
 
-import { CREATE_PRODUCT_RESET } from '../constants'
-
 const ShopProducts = () => {
   const dispatch = useDispatch()
   const [selectedCategory, setSelectedCategory] = useState('All categories')
+
   useEffect(() => {
     dispatch(getProductsList())
-    dispatch({
-      type: CREATE_PRODUCT_RESET,
-    })
+    // Remove CREATE_PRODUCT_RESET if not needed here
   }, [dispatch])
 
-  // products list reducer
   const productsListReducer = useSelector((state) => state.productsListReducer)
   const { loading, error, products } = productsListReducer
+
   return (
     <div>
-      {/* Image header */}
+      {/* Header with image */}
       <div className="px-0">
         <img
           src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -40,8 +37,9 @@ const ShopProducts = () => {
           </div>
         </div>
       </div>
+
       {/* Hot Products Section */}
-      <div className="text-3xl font-bold text-left mt-4 font-bold">
+      <div className="text-3xl text-left mt-4 font-bold">
         Hot offers
       </div>
       <hr className="w-36 border-4 border-blue-500 mt-2" />
@@ -49,6 +47,8 @@ const ShopProducts = () => {
         <CarouselIndicatorsInside />
         <hr className="w-40 border-[2px] border-gray-400 mt-8" />
       </div>
+
+      {/* All Products Section */}
       <div className="mt-8">
         <h4 className="text-3xl font-bold">All Products</h4>
         <hr className="w-36 border-2 border-blue-500 mt-2" />
@@ -62,6 +62,7 @@ const ShopProducts = () => {
             </span>
           </span>
         )}
+
         <div className="mt-4">
           <Row>
             {products

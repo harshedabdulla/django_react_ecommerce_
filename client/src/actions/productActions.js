@@ -73,14 +73,15 @@ export const getProductDetails = (id) => async (dispatch) => {
 // create product
 export const createProduct = (product) => async (dispatch, getState) => {
   try {
-    dispatch({
-      type: CREATE_PRODUCT_REQUEST,
-    })
+    dispatch({ type: CREATE_PRODUCT_REQUEST })
 
-    // login reducer
     const {
       userLoginReducer: { userInfo },
     } = getState()
+
+    if (!userInfo || !userInfo.token) {
+      throw new Error('User is not logged in')
+    }
 
     const config = {
       headers: {
@@ -89,13 +90,10 @@ export const createProduct = (product) => async (dispatch, getState) => {
       },
     }
 
-    // api call
+    // API call
     const { data } = await axios.post('/api/product-create/', product, config)
 
-    dispatch({
-      type: CREATE_PRODUCT_SUCCESS,
-      payload: data,
-    })
+    dispatch({ type: CREATE_PRODUCT_SUCCESS, payload: data })
   } catch (error) {
     dispatch({
       type: CREATE_PRODUCT_FAIL,
@@ -106,6 +104,7 @@ export const createProduct = (product) => async (dispatch, getState) => {
     })
   }
 }
+
 
 // delete product
 export const deleteProduct = (id) => async (dispatch, getState) => {

@@ -45,58 +45,58 @@ function ProductDetailsPage({ match }) {
   useEffect(() => {
     dispatch(getProductDetails(match.params.id))
   }, [dispatch, match.params.id])
-  
-  useEffect(async () => {
-    if (productDeletionSuccess) {
 
+  useEffect(() => {
+    if (productDeletionSuccess) {
       alert('Product successfully deleted.')
       history.push('/')
     }
   }, [productDeletionSuccess, history])
 
-  useEffect(async () => {
-    // Retrieve user info from localStorage when the component mounts
-    const storedUserInfo = localStorage.getItem('userInfo')
-    if (storedUserInfo) {
-      getOwnRatings(JSON.parse(storedUserInfo), match.params.id)
-      setUserInfo(JSON.parse(storedUserInfo))
-      
+  useEffect(() => {
+    const fetchUserDataAndRating = async () => {
+      const storedUserInfo = localStorage.getItem('userInfo')
+      if (storedUserInfo) {
+        const parsedUserInfo = JSON.parse(storedUserInfo)
+        setUserInfo(parsedUserInfo)
+        const config = {
+          headers: {
+            Authorization: `Bearer ${parsedUserInfo.token}`,
+          },
+        }
+        try {
+          const response = await axios.get(`/api/product-myrating/${match.params.id}/`, config)
+          setRating(response.data["rating"])
+        } catch (error) {
+          console.error("Error fetching rating:", error)
+        }
+      }
     }
-    const config = {
-      headers: {
-        Authorization: `Bearer ${JSON.parse(storedUserInfo).token}`,
-      },
-    }
-    const response = await axios.get(`/api/product-myrating/${match.params.id}/`, config);
-    console.log(response.data["rating"])
-    setRating(response.data["rating"])
-  }, [])
 
-  const getOwnRatings = async (userInfo, id) =>{
-    if (userInfo && product.id){
-      
-      
-    }
-  }
+    fetchUserDataAndRating()
+  }, [match.params.id])
 
   const confirmDelete = () => {
     dispatch(deleteProduct(match.params.id))
     handleClose()
   }
 
-  const handleRatingSubmit = async (rating) => {
+  const handleRatingSubmit = async (newRating) => {
     if (userInfo) {
-      // Dispatch action to add product rating here
-      console.log(`Submitting rating ${rating}`)
+      console.log(`Submitting rating ${newRating}`)
       const config = {
         headers: {
           Authorization: `Bearer ${userInfo.token}`,
         },
       }
-      const response = await axios.post(`/api/product-rate/${product.id}/`,{"rating":rating}, config);
-      console.log(response)
+      try {
+        const response = await axios.post(`/api/product-rate/${product.id}/`, { rating: newRating }, config)
+        console.log(response)
+        setRating(newRating) // Update local rating after submission
+      } catch (error) {
+        console.error("Error submitting rating:", error)
+      }
     } else {
-      // Handle user not logged in
       console.log('User not logged in')
     }
   }
@@ -105,7 +105,6 @@ function ProductDetailsPage({ match }) {
     try {
       if (!userInfo) {
         console.error('User not authenticated')
-        // You can redirect the user to the login page or show a message here
         return
       }
 
@@ -136,7 +135,6 @@ function ProductDetailsPage({ match }) {
 
   const handleAddToCart = () => {
     if (!userInfo) {
-      // Redirect to login page or show a message
       history.push('/login')
     } else {
       dispatch(addToCart(product.id))
@@ -228,7 +226,9 @@ function ProductDetailsPage({ match }) {
                 </span>
                 <div className="text-gray-600 text-sm">
                   <p>{product.description}</p>
-                  <StarRating valuek={rating} onSubmit={handleRatingSubmit} />
+                  {userInfo && (
+                  <StarRating value={rating} onSubmit={handleRatingSubmit} />
+                  )}
                 </div>
                 {/* Add to cart button */}
 

@@ -2,21 +2,15 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { getProductsList } from '../actions/productActions'
-
 import { useHistory } from 'react-router-dom'
 import { CREATE_PRODUCT_RESET } from '../constants'
-
+import { Link } from 'react-router-dom'
 import bakery from '../assets/bakery.png'
 import dairy from '../assets/dairy.png'
 import fruits from '../assets/fruits.png'
 import meat from '../assets/meat.png'
 import clean from '../assets/clean.png'
 import Glide from '@glidejs/glide'
-import carrots from '../assets/featured/carrots.jpeg'
-import cereals from '../assets/featured/cereals.jpeg'
-import coffee from '../assets/featured/coffee.jpeg'
-import grapes from '../assets/featured/grapes.jpeg'
-import mango from '../assets/featured/mango.jpeg'
 import axios from 'axios'
 import fr from '../assets/fr.png'
 
@@ -165,11 +159,11 @@ const ProductsListPage = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
         {bestsellers.map((product) => (
-          <div>
+          <Link to={`/product/${product.id}`} key={product.id} className="border p-2 hover:shadow-sm rounded-sm">
           <img src={product.image} alt="grapes" className="w-48 h-48 m-auto" />
           <h4 className="text-center mt-4">{product.name}</h4>
           <h4 className="text-center font-bold"> ₹{product.price}</h4>
-        </div>
+        </Link>
         ))}
         </div>
       </div>
@@ -180,6 +174,7 @@ const ProductsListPage = () => {
             FRUITS
           </h1>
           <img src={fr} alt="fruits" className="w-20 h-16 mb-12" />
+
         </div>
       </div>
     </div>
