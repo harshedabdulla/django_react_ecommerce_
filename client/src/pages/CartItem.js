@@ -112,6 +112,28 @@ function CartItem({ history, match }) {
       console.error('Error:', error)
     }
   }
+  const addOrder = async () => {
+    try {
+      // check if user is logged in
+      if (!userInfo) {
+        console.error('User not logged in')
+        return
+      }
+      // take the items from the cart
+      const items = cartItems.map((item) => item.id)
+      // create an order and add it to database
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+      const response = await axios.post('/orders/order-create/', { items }, config)
+      const data = response.data
+      console.log('Order created:', data)
+    } catch (error) {
+      console.error('Error creating order:', error)
+    }
+  }
 
   return (
     <div className="px-4">
@@ -165,7 +187,7 @@ function CartItem({ history, match }) {
               </p>
             </div>
             <Link to="/checkout" className="text-blue-500 mt-4">
-              <button className="bg-blue-500 px-4 py-1 text-white justify-end mt-4 mb-2 w-full rounded-none">
+              <button className="bg-blue-500 px-4 py-1 text-white justify-end mt-4 mb-2 w-full rounded-none" onClick={addOrder}>
                 Proceed to checkout
               </button>
             </Link>

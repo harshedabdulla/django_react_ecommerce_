@@ -91,7 +91,7 @@ const CheckoutPage = () => {
       }
 
       // Save the address before proceeding with payment
-      await dispatch(createUserAddress(address))
+      //dispatch(createUserAddress(address))
 
       const response = await axios.post('/orders/order-create/', {}, config)
       const data = response.data

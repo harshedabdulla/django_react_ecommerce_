@@ -7,7 +7,6 @@ import {
 } from '../actions/productActions'
 import Message from '../components/Message'
 import axios from 'axios'
-import useRazorpay from 'react-razorpay'
 import {
   Spinner,
   Row,
@@ -21,7 +20,6 @@ import { Link, useHistory } from 'react-router-dom'
 import StarRating from '../components/StarRating' // Assuming you have a StarRating component
 
 function ProductDetailsPage({ match }) {
-  const [Razorpay] = useRazorpay()
   const dispatch = useDispatch()
   const history = useHistory()
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
@@ -98,38 +96,6 @@ function ProductDetailsPage({ match }) {
       }
     } else {
       console.log('User not logged in')
-    }
-  }
-
-  const paynow = async () => {
-    try {
-      if (!userInfo) {
-        console.error('User not authenticated')
-        return
-      }
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      }
-
-      const response = await axios.post('/orders/order-create/', {}, config)
-      const data = response.data
-
-      const options = {
-        key: data.razorpay_merchant_key,
-        amount: '10000',
-        currency: 'INR',
-        name: 'ecommerce application',
-        order_id: data.razorpay_order_id,
-        callback_url: 'http://localhost:3000/',
-      }
-
-      const rzp1 = new Razorpay(options)
-      rzp1.open()
-    } catch (error) {
-      console.error('Error:', error)
     }
   }
 
@@ -224,8 +190,8 @@ function ProductDetailsPage({ match }) {
                 <span className="text-red-600 text-2xl font-bold mt-4">
                   ₹ {product.price}
                 </span>
-                <div className="text-gray-600 text-sm">
-                  <p>{product.description}</p>
+                <div className="text-gray-600 text-sm mb-4">
+                  <p className='mb-2'>{product.description}</p>
                   {userInfo && (
                   <StarRating value={rating} onSubmit={handleRatingSubmit} />
                   )}
@@ -241,7 +207,7 @@ function ProductDetailsPage({ match }) {
                 {showSuccessMessage && (
 
                   <div
-                    className="bg-green-400 w-fit my-4 py-2 text-center"
+                    className="bg-green-400 w-fit px-4 my-4 py-2 text-center"
                     role="alert"
                   >
                     Product added to cart successfully!

@@ -69,6 +69,9 @@ class CreateOrderView(APIView):
 		cart = Cart.objects.get(user=user)
 		cost = sum(product.price for product in cart.products.all()) * 100
 		amount_in_paisa = int(cost)
+
+		if amount_in_paisa<100:
+			amount_in_paisa=100
 		
   
 		razorpay_order = razorpay_client.order.create(dict(amount=amount_in_paisa,
@@ -87,13 +90,12 @@ class CreateOrderView(APIView):
 			currency="INR",
 			callback_url = 'http://127.0.0.1:8000/orders/paymenthandler/'
 		)
-		
 		order.products.set(cart.products.all())
+		order.save()
 		cart.products.clear()
 
 		serializer = OrderSerializer(order)
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 class OrderView(APIView):
 
 	def get(self, request):

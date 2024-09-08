@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { getProductsList } from '../actions/productActions'
-import { useHistory } from 'react-router-dom'
 import { CREATE_PRODUCT_RESET } from '../constants'
 import { Link } from 'react-router-dom'
 import bakery from '../assets/bakery.png'
@@ -15,10 +14,7 @@ import axios from 'axios'
 import fr from '../assets/fr.png'
 
 const ProductsListPage = () => {
-  let history = useHistory()
-  let searchTerm = history.location.search
   const dispatch = useDispatch()
-  const [selectedCategory, setSelectedCategory] = useState('All categories')
   const [bestsellers, setBestsellers] = useState([])
   useEffect(() => {
     const slider = new Glide('.glide-01', {
@@ -49,6 +45,7 @@ const ProductsListPage = () => {
       slider.destroy()
     }
   }, [])
+
   useEffect(() => {
     dispatch(getProductsList())
     dispatch({
@@ -56,9 +53,7 @@ const ProductsListPage = () => {
     })
   }, [dispatch])
 
-  const handleCategoryClick = (category) => {
-    setSelectedCategory(category)
-  }
+
 
   const fetchTopProducts = async () => {
       const response = await axios.get('/api/products/top/');
@@ -71,7 +66,7 @@ const ProductsListPage = () => {
       <div className="ml-60">
         <img
           src="https://i0.wp.com/www.globaltrademag.com/wp-content/uploads/2020/04/shutterstock_121120492.jpg?w=1422&ssl=1"
-          alt="Your Image"
+          alt="grocery"
           className="w-100 h-80 mt-4"
         />
       </div>
@@ -159,10 +154,12 @@ const ProductsListPage = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
         {bestsellers.map((product) => (
-          <Link to={`/product/${product.id}`} key={product.id} className="border p-2 hover:shadow-sm rounded-sm">
+          <Link to={`/product/${product.id}`} key={product.id} className="border p-2 hover:shadow-lg rounded-sm" style={{textDecoration:'none'}}>
+          <div className="">
           <img src={product.image} alt="grapes" className="w-48 h-48 m-auto" />
           <h4 className="text-center mt-4">{product.name}</h4>
           <h4 className="text-center font-bold"> ₹{product.price}</h4>
+          </div>
         </Link>
         ))}
         </div>

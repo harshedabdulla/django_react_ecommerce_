@@ -31,15 +31,13 @@ function Product({ product }) {
   return (
     <div>
       <Card className="mb-4 rounded">
+        <Link to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
         <Card.Body>
-          <Link to={`/product/${product.id}`}>
             <Card.Img
               variant="top"
               src={product.image}
               className="h-48 w-full object-cover"
-            />
-          </Link>
-          <Link to={`/product/${product.id}`}>
+            />                   
             <Card.Title as="div">
               <strong className='mt-2'>{product.name}</strong>
             </Card.Title>
@@ -48,9 +46,10 @@ function Product({ product }) {
                 {rating === 0 ? "Unrated" : `${rating}/5`}
               </div>
             )}
-          </Link>
+          
           <Card.Text as="h3">₹ {product.price}</Card.Text>
         </Card.Body>
+        </Link>
       </Card>
     </div>
   )
