@@ -3,8 +3,12 @@ from .models import Order
 from product.serializers import ProductSerializer
 
 class OrderSerializer(serializers.ModelSerializer):
-    products = ProductSerializer(many=True, read_only=True)
+    products = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = ['id', 'date', 'cost', 'products']
+
+    def get_products(self, obj):
+        # Assuming the `products` field is a related name for products in the Order model
+        return [product.name for product in obj.products.all()]

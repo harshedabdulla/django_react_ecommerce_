@@ -96,13 +96,14 @@ class CreateOrderView(APIView):
 
 		serializer = OrderSerializer(order)
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 class OrderView(APIView):
 
-	def get(self, request):
-		orders = Order.objects.filter(user=request.user)
-		serializer = OrderSerializer(orders, many=True)
-		return Response(serializer.data, status=status.HTTP_200_OK)
-	
+    def get(self, request):
+        orders = Order.objects.filter(user=request.user)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class UpdateOrderStatusView(APIView):
 
 	def patch(self, request, pk):
