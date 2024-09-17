@@ -509,9 +509,10 @@ export const getAllOrders = () => async (dispatch, getState) => {
 
         // call api
         const { data } = await axios.get(
-            `/account/all-orders-list/`,
+            `/orders/orders/`,
             config
         )
+        console.log('Fetched Orders:', data)
 
         dispatch({
             type: GET_ALL_ORDERS_SUCCESS,
