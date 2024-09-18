@@ -65,22 +65,25 @@ function OrdersListPage() {
                     <thead>
                         <tr className="p-3 bg-blue-400 text-white text-center">
                             <th>Serial No</th>
-                            <th>Ordered Item</th>
+                            <th>Ordered Items</th> {/* Changed header to plural */}
                             <th>Date</th>
                             <th>Amount</th>
                         </tr>
                     </thead>
                     <tbody>
                         {sortedOrders.filter((item) => (
+                            item.products.length > 0 &&  // Only include orders with products
                             (item.id.toString().includes(cloneSearchTerm) ||
-                             (item.products.length > 0 && item.products[0].toLowerCase().includes(cloneSearchTerm)))
-                        )
-                        ).map((order, idx) => (
+                             item.products.some(product => product.toLowerCase().includes(cloneSearchTerm))) // Check all products
+                        )).map((order, idx) => (
                             <tr key={order.id} className="text-center">
                                 <td>{idx + 1}</td> {/* Serial No */}
-                                <td>{order.products.length > 0 ? order.products[0] : 'N/A'}</td> {/* Display the name of the first product */}
+                                
+                                {/* Display all products, separated by commas */}
+                                <td>{order.products.join(', ')}</td> 
+
                                 <td>{dateCheck(order.date)}</td>
-                                <td>{order.cost} INR</td>
+                                <td>{order.cost/100} INR</td>
                             </tr>
                         ))}
                     </tbody>

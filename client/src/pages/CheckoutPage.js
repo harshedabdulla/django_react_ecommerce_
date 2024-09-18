@@ -95,8 +95,9 @@ const CheckoutPage = () => {
 
       const response = await axios.post('/orders/order-create/', {}, config)
       const data = response.data
+      console.log(data)
       const options = {
-        key: data.razorpay_merchant_key,
+        key: 'rzp_test_lKLwu13AnAdmPU',
         amount: data.cost,
         currency: 'INR',
         name: 'Ecommerce Application',
